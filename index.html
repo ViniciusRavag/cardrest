@@ -24,13 +24,6 @@
         body { font-family: 'Inter', sans-serif; background: var(--bg-light); color: var(--text-dark); padding-bottom: 100px; }
 
         /* Estilos do Cardápio Principal */
-        .header { position: relative; height: 180px; background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url('https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=1074') no-repeat center center; background-size: cover; display: flex; align-items: flex-end; padding: 20px; }
-        .restaurant-info { display: flex; align-items: center; gap: 15px; }
-        .restaurant-logo { width: 60px; height: 60px; border-radius: 8px; background: var(--white); display: flex; align-items: center; justify-content: center; border: 2px solid var(--white); overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
-        .restaurant-logo img { width: 100%; height: 100%; object-fit: cover; }
-        .restaurant-details h1 { color: var(--white); font-size: 1.5rem; font-weight: 700; text-shadow: 1px 1px 3px rgba(0,0,0,0.5); }
-        .restaurant-details p { color: var(--white); opacity: 0.9; font-size: 0.85rem; }
-        .promo-banner { background: #fff1e9; color: var(--primary-color); padding: 10px 20px; text-align: center; font-weight: 600; font-size: 0.8rem; border-bottom: 1px solid var(--border-color); }
         .category-tabs { display: flex; overflow-x: auto; padding: 15px 20px 10px; gap: 10px; background: var(--white); border-bottom: 1px solid var(--border-color); scrollbar-width: none; }
         .category-tabs::-webkit-scrollbar { display: none; }
         .category-tab { padding: 8px 16px; border-radius: 20px; background: #f1f1f1; border: 1px solid var(--border-color); white-space: nowrap; font-size: 0.85rem; font-weight: 600; color: #555; cursor: pointer; transition: all 0.3s ease; }
@@ -102,14 +95,6 @@
     </style>
 </head>
 <body>
-    <!-- Estrutura Principal -->
-    <div class="header">
-        <div class="restaurant-info">
-            <div class="restaurant-logo"><img src="https://placehold.co/60x60/FFFFFF/333333?text=LE&font=raleway" alt="Logo La Encasa"></div>
-            <div class="restaurant-details"><h1>La Encasa</h1><p>Cozinha Afetiva</p></div>
-        </div>
-    </div>
-    <div class="promo-banner">🎉 Use o cupom <strong>DESCONTO10</strong> e ganhe 10% de desconto!</div>
     <div class="category-tabs">
         <div class="category-tab active" onclick="filterCategory('all', this)">Todos</div>
         <div class="category-tab" onclick="filterCategory('pizza', this)">Pizzas</div>
@@ -120,7 +105,6 @@
     <div class="products-container"><div class="products-grid" id="productsGrid"></div></div>
     <div class="floating-cart" id="floatingCart"><button class="cart-btn" onclick="openCartModal()"><span>🛒 Ver Carrinho</span><span id="cartTotal">R$ 0,00</span><div class="cart-count" id="cartCount">0</div></button></div>
 
-    <!-- Modais -->
     <div class="modal-overlay" id="optionsModal"></div>
     <div class="modal-overlay" id="cartModal"></div>
 
@@ -280,6 +264,21 @@
 
         function openCartModal() {
             const modal = document.getElementById('cartModal');
+
+            // --- INÍCIO DA CORREÇÃO ---
+            // Salva os valores atuais do formulário antes de redesenhar o modal
+            const
+ 
+formValues = {
+                name: document.getElementById('customerName')?.value,
+                address: document.getElementById('customerAddress')?.value,
+                number: document.getElementById('customerNumber')?.value,
+                cep: document.getElementById('customerCep')?.value,
+                notes: document.getElementById('customerNotes')?.value,
+                paymentMethod: document.getElementById('paymentMethod')?.value
+            };
+            // --- FIM DA CORREÇÃO ---
+
             let contentHTML = `<div class="modal-content">
                 <div class="modal-header"><h3 class="modal-title">🛒 Finalizar Pedido</h3><button class="close-btn" onclick="closeCartModal()">&times;</button></div>
                 <div class="modal-body">`;
@@ -302,7 +301,6 @@
                 const subtotal = cart.reduce((sum, item) => sum + (item.unitPrice * item.quantity), 0);
                 const total = subtotal + (cartState.deliveryType === 'delivery' ? cartState.deliveryFee : 0);
                 
-                // Formulário de Entrega
                 contentHTML += `<div class="cart-section">
                     <div class="form-group">
                         <label class="form-label">Estabelecimento para Entrega</label>
@@ -327,7 +325,6 @@
                     <div class="form-group"><label class="form-label">Observações</label><textarea class="form-input" id="customerNotes" rows="2" placeholder="Alguma observação especial sobre o pedido?"></textarea></div>
                 </div>`;
 
-                // Resumo do Pedido
                 contentHTML += `<div class="cart-section">
                     <div class="total-row"><span>Subtotal:</span><span>R$ ${subtotal.toFixed(2).replace('.', ',')}</span></div>
                     <div class="total-row"><span>Taxa de entrega:</span><span id="delivery-fee-text">R$ ${cartState.deliveryFee.toFixed(2).replace('.', ',')}</span></div>
@@ -337,6 +334,19 @@
             }
             contentHTML += `</div></div>`;
             modal.innerHTML = contentHTML;
+
+            // --- INÍCIO DA CORREÇÃO ---
+            // Restaura os valores no novo formulário
+            if (cart.length > 0) {
+                document.getElementById('customerName').value = formValues.name || '';
+                document.getElementById('customerAddress').value = formValues.address || '';
+                document.getElementById('customerNumber').value = formValues.number || '';
+                document.getElementById('customerCep').value = formValues.cep || '';
+                document.getElementById('customerNotes').value = formValues.notes || '';
+                document.getElementById('paymentMethod').value = formValues.paymentMethod || PAYMENT_METHODS[0];
+            }
+            // --- FIM DA CORREÇÃO ---
+            
             modal.classList.add('active');
         }
 
@@ -353,14 +363,19 @@
         }
         
         function handleStoreChange(storeId) { cartState.selectedStoreId = parseInt(storeId); }
+
         function handleDeliveryTypeChange(type) {
             cartState.deliveryType = type;
             document.getElementById('delivery-info').style.display = type === 'delivery' ? 'block' : 'none';
-            if (type === 'pickup') cartState.deliveryFee = 0;
-            else handleCepChange(document.getElementById('customerCep').value); // Recalcula o frete se voltar para entrega
+            if (type === 'pickup') {
+                cartState.deliveryFee = 0;
+            } else {
+                handleCepChange(document.getElementById('customerCep').value);
+            }
             openCartModal();
             updateCartDisplay();
         }
+
         function handleCepChange(cep) {
             if (cartState.deliveryType === 'pickup') return;
             const cepPrefix = cep.replace(/\D/g, '').substring(0, 5);
