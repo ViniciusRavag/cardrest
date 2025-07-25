@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>La Encasa - Cardápio Digital</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #ff6b35;
+            --secondary-color: #f7931e;
+            --text-dark: #333;
+            --text-light: #777;
+            --bg-light: #f8f8f8;
+            --white: #fff;
+            --border-color: #e0e0e0;
+            --success-color: #28a745;
+            --danger-color: #d9534f;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: var(--bg-light); color: var(--text-dark); padding-bottom: 100px; }
+
+        /* Estilos do Cardápio Principal */
+        .header { position: relative; height: 180px; background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url('https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=1074') no-repeat center center; background-size: cover; display: flex; align-items: flex-end; padding: 20px; }
+        .restaurant-info { display: flex; align-items: center; gap: 15px; }
+        .restaurant-logo { width: 60px; height: 60px; border-radius: 8px; background: var(--white); display: flex; align-items: center; justify-content: center; border: 2px solid var(--white); overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
+        .restaurant-logo img { width: 100%; height: 100%; object-fit: cover; }
+        .restaurant-details h1 { color: var(--white); font-size: 1.5rem; font-weight: 700; text-shadow: 1px 1px 3px rgba(0,0,0,0.5); }
+        .restaurant-details p { color: var(--white); opacity: 0.9; font-size: 0.85rem; }
+        .promo-banner { background: #fff1e9; color: var(--primary-color); padding: 10px 20px; text-align: center; font-weight: 600; font-size: 0.8rem; border-bottom: 1px solid var(--border-color); }
+        .category-tabs { display: flex; overflow-x: auto; padding: 15px 20px 10px; gap: 10px; background: var(--white); border-bottom: 1px solid var(--border-color); scrollbar-width: none; }
+        .category-tabs::-webkit-scrollbar { display: none; }
+        .category-tab { padding: 8px 16px; border-radius: 20px; background: #f1f1f1; border: 1px solid var(--border-color); white-space: nowrap; font-size: 0.85rem; font-weight: 600; color: #555; cursor: pointer; transition: all 0.3s ease; }
+        .category-tab.active { background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)); color: var(--white); border-color: var(--primary-color); }
+        .products-container { padding: 20px 15px; }
+        .products-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .product-card { background: var(--white); border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.07); display: flex; flex-direction: column; }
+        .product-image { width: 100%; height: 120px; background: #eee; }
+        .product-image img { width: 100%; height: 100%; object-fit: cover; }
+        .product-info { padding: 12px; display: flex; flex-direction: column; flex-grow: 1; }
+        .product-name { font-size: 0.9rem; font-weight: 600; color: var(--text-dark); margin-bottom: 4px; }
+        .product-description { font-size: 0.75rem; color: var(--text-light); line-height: 1.4; flex-grow: 1; margin-bottom: 10px; }
+        .product-footer { display: flex; justify-content: space-between; align-items: center; margin-top: auto; }
+        .product-price { font-size: 1.1rem; font-weight: 700; color: var(--success-color); }
+        .view-options-btn { background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)); color: white; border: none; border-radius: 6px; padding: 8px 12px; font-size: 0.8rem; font-weight: 600; cursor: pointer; transition: all 0.2s ease; box-shadow: 0 2px 5px rgba(255, 107, 53, 0.3); }
+
+        /* Modal Base */
+        .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.6); z-index: 2000; display: flex; align-items: flex-end; opacity: 0; pointer-events: none; transition: opacity 0.3s ease; }
+        .modal-overlay.active { opacity: 1; pointer-events: auto; }
+        .modal-content { background: var(--white); border-radius: 20px 20px 0 0; width: 100%; max-height: 90vh; overflow-y: auto; transform: translateY(100%); transition: transform 0.3s ease-out; display: flex; flex-direction: column; }
+        .modal-overlay.active .modal-content { transform: translateY(0); }
+        .modal-header { padding: 15px 20px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; background: var(--white); position: sticky; top: 0; z-index: 10; }
+        .modal-title { font-size: 1.2rem; font-weight: bold; }
+        .close-btn { background: none; border: none; font-size: 1.8rem; color: #888; cursor: pointer; }
+        .modal-body { padding: 0 20px 20px; flex-grow: 1; }
+        .modal-footer { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; border-top: 1px solid var(--border-color); background: var(--white); position: sticky; bottom: 0; }
+
+        /* Modal de Opções */
+        #optionsModal .modal-body { padding: 0; }
+        .options-product-image { width: 100%; height: 180px; object-fit: cover; }
+        .options-product-details { padding: 15px 20px; }
+        .options-product-details .product-description { font-size: 0.9rem; margin-bottom: 15px; }
+        .option-group { border-top: 1px solid var(--border-color); padding: 15px 20px; }
+        .option-group-title { font-size: 1rem; font-weight: 700; margin-bottom: 5px; }
+        .option-group-subtitle { font-size: 0.8rem; color: var(--text-light); margin-bottom: 15px; }
+        .option-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; }
+        .option-item label { display: flex; align-items: center; gap: 10px; font-size: 0.9rem; font-weight: 500; flex-grow: 1; }
+        .option-item input[type="radio"], .option-item input[type="checkbox"] { width: 20px; height: 20px; accent-color: var(--primary-color); }
+        .option-price { font-size: 0.9rem; font-weight: 500; color: var(--text-dark); }
+        .quantity-controls { display: flex; align-items: center; gap: 15px; }
+        .qty-btn { width: 35px; height: 35px; border-radius: 50%; border: 1px solid var(--primary-color); background: var(--white); color: var(--primary-color); font-size: 1.5rem; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+        .qty-btn:last-child { background: var(--primary-color); color: var(--white); }
+        .quantity { font-size: 1.1rem; font-weight: 600; }
+        .add-to-cart-btn { background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)); color: var(--white); border: none; border-radius: 8px; padding: 12px 20px; font-size: 0.9rem; font-weight: 600; cursor: pointer; display: flex; gap: 10px; }
+        .add-to-cart-btn .price { background: rgba(0,0,0,0.1); padding: 2px 8px; border-radius: 5px; }
+
+        /* Carrinho Flutuante e Modal do Carrinho */
+        .floating-cart { position: fixed; bottom: 20px; left: 50%; z-index: 1000; transition: opacity 0.3s, transform 0.3s; opacity: 0; transform: translate(-50%, 20px); pointer-events: none; }
+        .floating-cart.visible { opacity: 1; transform: translateX(-50%); pointer-events: auto; }
+        .cart-btn { background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)); color: white; border: none; border-radius: 50px; padding: 12px 25px; display: flex; align-items: center; gap: 10px; font-size: 0.9rem; font-weight: 600; cursor: pointer; box-shadow: 0 4px 20px rgba(0,0,0, 0.2); min-width: 220px; justify-content: space-between; }
+        .cart-count { background: rgba(255, 255, 255, 0.2); border-radius: 50%; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; font-weight: bold; }
+        .empty-cart { text-align: center; padding: 50px 20px; color: var(--text-light); }
+        .cart-item { display: flex; gap: 15px; padding: 15px 0; border-bottom: 1px solid #f0f0f0; }
+        .cart-item-image img { width: 60px; height: 60px; border-radius: 8px; object-fit: cover; }
+        .cart-item-info { flex: 1; }
+        .cart-item-name { font-weight: 600; margin-bottom: 4px; }
+        .cart-item-details { font-size: 0.8rem; color: var(--text-light); margin-top: 5px; list-style-position: inside; padding-left: 5px; }
+        .cart-section { background: var(--white); padding: 20px; border-radius: 12px; margin: 20px 0; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+        .cart-section-title { font-size: 1rem; font-weight: 700; margin-bottom: 15px; }
+        .total-row { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 0.9rem; color: #555; }
+        .total-row.final { font-size: 1.2rem; font-weight: bold; color: var(--text-dark); padding-top: 10px; border-top: 1px solid var(--border-color); margin-top: 10px; }
+        .form-group { margin-bottom: 15px; }
+        .form-label { display: block; margin-bottom: 6px; font-weight: 600; font-size: 0.9rem; }
+        .form-input, .form-select { width: 100%; padding: 12px; border: 1px solid var(--border-color); border-radius: 8px; font-size: 0.9rem; background: #fdfdfd; }
+        .form-input:focus, .form-select:focus { outline: none; border-color: var(--primary-color); }
+        .delivery-type-group { display: flex; gap: 10px; margin-bottom: 15px; }
+        .delivery-type-group label { display: flex; align-items: center; gap: 8px; }
+        .whatsapp-btn { width: 100%; padding: 15px; background: linear-gradient(135deg, #25d366, #128c7e); color: white; border: none; border-radius: 10px; font-size: 1rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <!-- Estrutura Principal -->
+    <div class="header">
+        <div class="restaurant-info">
+            <div class="restaurant-logo"><img src="https://placehold.co/60x60/FFFFFF/333333?text=LE&font=raleway" alt="Logo La Encasa"></div>
+            <div class="restaurant-details"><h1>La Encasa</h1><p>Cozinha Afetiva</p></div>
+        </div>
+    </div>
+    <div class="promo-banner">🎉 Use o cupom <strong>DESCONTO10</strong> e ganhe 10% de desconto!</div>
+    <div class="category-tabs">
+        <div class="category-tab active" onclick="filterCategory('all', this)">Todos</div>
+        <div class="category-tab" onclick="filterCategory('pizza', this)">Pizzas</div>
+        <div class="category-tab" onclick="filterCategory('burger', this)">Burgers</div>
+        <div class="category-tab" onclick="filterCategory('petisco', this)">Petiscos</div>
+        <div class="category-tab" onclick="filterCategory('bebida', this)">Bebidas</div>
+    </div>
+    <div class="products-container"><div class="products-grid" id="productsGrid"></div></div>
+    <div class="floating-cart" id="floatingCart"><button class="cart-btn" onclick="openCartModal()"><span>🛒 Ver Carrinho</span><span id="cartTotal">R$ 0,00</span><div class="cart-count" id="cartCount">0</div></button></div>
+
+    <!-- Modais -->
+    <div class="modal-overlay" id="optionsModal"></div>
+    <div class="modal-overlay" id="cartModal"></div>
+
+    <script>
+        // --- CONFIGURAÇÕES GLOBAIS ---
+        const STORES = [
+            { id: 1, name: "La Encasa - Loja Centro", address: "Rua Principal, 123", whatsapp: "5516991421704" },
+            { id: 2, name: "La Encasa - Loja Shopping", address: "Av. das Compras, 456", whatsapp: "5511922222222" }
+        ];
+
+        const DELIVERY_ZONES = {
+            "14010": 5.00,  // CEPs começando com 14010
+            "14015": 6.00,
+            "14020": 7.50,
+            "14021": 8.00,
+            "default": 10.00 // Frete padrão se o CEP não for encontrado
+        };
+        
+        const PAYMENT_METHODS = ["Dinheiro", "Cartão de Crédito", "Cartão de Débito", "Pix"];
+
+        const PRODUCTS = [
+            { id: 1, name: "Pizza Calabresa", description: "Deliciosa pizza com calabresa, cebola e azeitonas.", price: 35.00, image: "https://images.unsplash.com/photo-1593560708920-61dd98c46a4e?auto=format&fit=crop&w=435", category: "pizza" },
+            { id: 2, name: "Hambúrguer Artesanal", description: "Hambúrguer de 180g, pão brioche, alface, tomate e molho especial.", price: 20.00, image: "https://images.unsplash.com/photo-1571091718767-18b5b1457add?auto=format&fit=crop&w=872", category: "burger",
+                options: [{ title: "Adicionais", subtitle: "Escolha até 5 opções", type: "checkbox", max: 5, items: [ { name: "Muçarela", price: 5.00 }, { name: "Cheddar", price: 5.00 }, { name: "Hambúrguer Extra", price: 8.00 }, { name: "Bacon", price: 4.00 } ] }]
+            },
+            { id: 6, name: "Batata Frita", description: "Porção generosa de batata frita crocante com maionese da casa.", price: 0, image: "https://images.unsplash.com/photo-1541592106381-b65b60662604?auto=format&fit=crop&w=435", category: "petisco",
+                options: [
+                    { title: "Escolha um tamanho", subtitle: "Selecione uma opção", type: "radio", required: true, items: [ { name: "Pequena", price: 10.00 }, { name: "Média", price: 15.00 }, { name: "Grande", price: 20.00 } ] },
+                    { title: "Turbine sua batata", subtitle: "Escolha até 2 opções", type: "checkbox", max: 2, items: [ { name: "Bacon em cubos", price: 5.00 }, { name: "Cheddar cremoso", price: 6.00 } ] }
+                ]
+            },
+            { id: 5, name: "Refrigerante Lata 350ml", description: "Escolha seu sabor favorito.", price: 5.00, image: "https://images.unsplash.com/photo-1625772299848-391b6a87d7b3?auto=format&fit=crop&w=387", category: "bebida" },
+        ];
+
+        // --- ESTADO DA APLICAÇÃO ---
+        let cart = [];
+        let currentCategory = 'all';
+        let cartState = {
+            selectedStoreId: STORES[0].id,
+            deliveryType: 'delivery',
+            deliveryFee: 0
+        };
+
+        // --- INICIALIZAÇÃO ---
+        document.addEventListener('DOMContentLoaded', () => {
+            renderProducts();
+            updateCartDisplay();
+        });
+
+        // --- RENDERIZAÇÃO ---
+        function renderProducts() {
+            const grid = document.getElementById('productsGrid');
+            grid.innerHTML = '';
+            const filtered = PRODUCTS.filter(p => currentCategory === 'all' || p.category === currentCategory);
+            filtered.forEach(product => {
+                const card = document.createElement('div');
+                card.className = 'product-card';
+                const basePrice = product.price > 0 ? product.price : (product.options && product.options[0].items[0].price);
+                card.innerHTML = `
+                    <div class="product-image"><img src="${product.image}" alt="${product.name}" loading="lazy"></div>
+                    <div class="product-info">
+                        <div class="product-name">${product.name}</div>
+                        <div class="product-description">${product.description}</div>
+                        <div class="product-footer">
+                            <span class="product-price">${(product.price === 0) ? 'A partir de' : ''} R$ ${basePrice.toFixed(2).replace('.', ',')}</span>
+                            <button class="view-options-btn" onclick="openOptionsModal(${product.id})">Ver Opções</button>
+                        </div>
+                    </div>`;
+                grid.appendChild(card);
+            });
+        }
+
+        function filterCategory(category, element) {
+            currentCategory = category;
+            document.querySelectorAll('.category-tab').forEach(tab => tab.classList.remove('active'));
+            element.classList.add('active');
+            renderProducts();
+        }
+
+        // --- LÓGICA DO MODAL DE OPÇÕES (sem alterações) ---
+        function openOptionsModal(productId) {
+            const product = PRODUCTS.find(p => p.id === productId);
+            if (!product) return;
+            const modal = document.getElementById('optionsModal');
+            let optionsHTML = '';
+            if(product.options) {
+                product.options.forEach((group, groupIndex) => {
+                    optionsHTML += `<div class="option-group"><div class="option-group-title">${group.title}</div><div class="option-group-subtitle">${group.subtitle}</div>`;
+                    group.items.forEach((item, itemIndex) => {
+                        const inputId = `group-${groupIndex}-item-${itemIndex}`;
+                        optionsHTML += `<div class="option-item">
+                            <label for="${inputId}"><input type="${group.type}" id="${inputId}" name="group-${groupIndex}" value="${item.price}" data-name="${item.name}" onchange="updateOptionPrice(${productId})">${item.name}</label>
+                            <span class="option-price">+ R$ ${item.price.toFixed(2).replace('.', ',')}</span></div>`;
+                    });
+                    optionsHTML += `</div>`;
+                });
+            }
+            modal.innerHTML = `<div class="modal-content">
+                <div class="modal-header"><h3 class="modal-title">${product.name}</h3><button class="close-btn" onclick="closeOptionsModal()">&times;</button></div>
+                <div class="modal-body">
+                    <img src="${product.image}" alt="${product.name}" class="options-product-image">
+                    <div class="options-product-details"><p class="product-description">${product.description}</p></div>
+                    ${optionsHTML}
+                </div>
+                <div class="modal-footer">
+                    <div class="quantity-controls"><button class="qty-btn" onclick="updateOptionQuantity(-1, ${productId})">-</button><span class="quantity" id="options-quantity">1</span><button class="qty-btn" onclick="updateOptionQuantity(1, ${productId})">+</button></div>
+                    <button class="add-to-cart-btn" onclick="addItemToCartFromModal(${productId})">Adicionar <span class="price" id="options-total-price"></span></button>
+                </div></div>`;
+            modal.classList.add('active');
+            updateOptionPrice(productId);
+        }
+        function closeOptionsModal() { document.getElementById('optionsModal').classList.remove('active'); }
+        function updateOptionQuantity(change, productId) {
+            const qtyEl = document.getElementById('options-quantity');
+            let quantity = parseInt(qtyEl.textContent) + change;
+            if (quantity < 1) quantity = 1;
+            qtyEl.textContent = quantity;
+            updateOptionPrice(productId);
+        }
+        function updateOptionPrice(productId) {
+            const product = PRODUCTS.find(p => p.id === productId);
+            let basePrice = product.price;
+            let optionsPrice = 0;
+            const content = document.getElementById('optionsModal');
+            const radio = content.querySelector('input[type="radio"]:checked');
+            if (radio) { basePrice = parseFloat(radio.value); }
+            content.querySelectorAll('input[type="checkbox"]:checked').forEach(box => { optionsPrice += parseFloat(box.value); });
+            const quantity = parseInt(document.getElementById('options-quantity').textContent);
+            const totalPrice = (basePrice + optionsPrice) * quantity;
+            document.getElementById('options-total-price').textContent = `R$ ${totalPrice.toFixed(2).replace('.', ',')}`;
+        }
+        function addItemToCartFromModal(productId) {
+            const product = PRODUCTS.find(p => p.id === productId);
+            const content = document.getElementById('optionsModal');
+            let basePrice = product.price;
+            let optionsPrice = 0;
+            let selectedOptions = [];
+            const radio = content.querySelector('input[type="radio"]:checked');
+            if (radio) { basePrice = parseFloat(radio.value); selectedOptions.push({ name: radio.dataset.name }); }
+            content.querySelectorAll('input[type="checkbox"]:checked').forEach(box => { optionsPrice += parseFloat(box.value); selectedOptions.push({ name: box.dataset.name }); });
+            const quantity = parseInt(document.getElementById('options-quantity').textContent);
+            const unitPrice = basePrice + optionsPrice;
+            cart.push({ id: product.id, name: product.name, quantity, unitPrice, selectedOptions, image: product.image, cartItemId: Date.now().toString() });
+            updateCartDisplay();
+            closeOptionsModal();
+        }
+
+        // --- LÓGICA DO CARRINHO ---
+        function updateCartDisplay() {
+            const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+            const subtotal = cart.reduce((sum, item) => sum + (item.unitPrice * item.quantity), 0);
+            const total = subtotal + (cartState.deliveryType === 'delivery' ? cartState.deliveryFee : 0);
+            document.getElementById('cartCount').textContent = totalItems;
+            document.getElementById('cartTotal').textContent = `R$ ${total.toFixed(2).replace('.', ',')}`;
+            document.getElementById('floatingCart').classList.toggle('visible', totalItems > 0);
+        }
+
+        function openCartModal() {
+            const modal = document.getElementById('cartModal');
+            let contentHTML = `<div class="modal-content">
+                <div class="modal-header"><h3 class="modal-title">🛒 Finalizar Pedido</h3><button class="close-btn" onclick="closeCartModal()">&times;</button></div>
+                <div class="modal-body">`;
+
+            if (cart.length === 0) {
+                contentHTML += `<div class="empty-cart"><h3>Seu carrinho está vazio</h3></div>`;
+            } else {
+                let itemsHTML = '<div class="cart-section">';
+                cart.forEach(item => {
+                    let optionsText = item.selectedOptions.map(opt => `<li>${opt.name}</li>`).join('');
+                    itemsHTML += `<div class="cart-item">
+                        <div class="cart-item-image"><img src="${item.image}" alt="${item.name}"></div>
+                        <div class="cart-item-info"><div class="cart-item-name">${item.name}</div>${optionsText ? `<ul class="cart-item-details">${optionsText}</ul>` : ''}</div>
+                        <div class="quantity-controls"><button class="qty-btn" onclick="updateCartItemQuantity('${item.cartItemId}', -1)">-</button><span class="quantity">${item.quantity}</span><button class="qty-btn" onclick="updateCartItemQuantity('${item.cartItemId}', 1)">+</button></div>
+                    </div>`;
+                });
+                itemsHTML += '</div>';
+                contentHTML += itemsHTML;
+
+                const subtotal = cart.reduce((sum, item) => sum + (item.unitPrice * item.quantity), 0);
+                const total = subtotal + (cartState.deliveryType === 'delivery' ? cartState.deliveryFee : 0);
+                
+                // Formulário de Entrega
+                contentHTML += `<div class="cart-section">
+                    <div class="form-group">
+                        <label class="form-label">Estabelecimento para Entrega</label>
+                        <select class="form-select" id="storeSelect" onchange="handleStoreChange(this.value)">
+                            ${STORES.map(s => `<option value="${s.id}" ${s.id == cartState.selectedStoreId ? 'selected' : ''}>${s.name}</option>`).join('')}
+                        </select>
+                    </div>
+                    <div class="form-group delivery-type-group">
+                        <label><input type="radio" name="deliveryType" value="pickup" onchange="handleDeliveryTypeChange(this.value)" ${cartState.deliveryType === 'pickup' ? 'checked' : ''}> Retirada</label>
+                        <label><input type="radio" name="deliveryType" value="delivery" onchange="handleDeliveryTypeChange(this.value)" ${cartState.deliveryType === 'delivery' ? 'checked' : ''}> Entrega</label>
+                    </div>
+                    <div id="delivery-info" style="display: ${cartState.deliveryType === 'delivery' ? 'block' : 'none'}">
+                        <div class="form-group"><label class="form-label">Seu Nome</label><input type="text" class="form-input" id="customerName"></div>
+                        <div class="form-group"><label class="form-label">Endereço de Entrega</label><input type="text" class="form-input" id="customerAddress" placeholder="Rua, Avenida, etc."></div>
+                        <div class="form-group"><label class="form-label">Número</label><input type="text" class="form-input" id="customerNumber"></div>
+                        <div class="form-group"><label class="form-label">CEP</label><input type="text" class="form-input" id="customerCep" placeholder="00000-000" onkeyup="handleCepChange(this.value)"></div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Forma de Pagamento</label>
+                        <select class="form-select" id="paymentMethod">${PAYMENT_METHODS.map(p => `<option value="${p}">${p}</option>`).join('')}</select>
+                    </div>
+                    <div class="form-group"><label class="form-label">Observações</label><textarea class="form-input" id="customerNotes" rows="2" placeholder="Alguma observação especial sobre o pedido?"></textarea></div>
+                </div>`;
+
+                // Resumo do Pedido
+                contentHTML += `<div class="cart-section">
+                    <div class="total-row"><span>Subtotal:</span><span>R$ ${subtotal.toFixed(2).replace('.', ',')}</span></div>
+                    <div class="total-row"><span>Taxa de entrega:</span><span id="delivery-fee-text">R$ ${cartState.deliveryFee.toFixed(2).replace('.', ',')}</span></div>
+                    <div class="total-row final"><span>Total:</span><span id="total-price-text">R$ ${total.toFixed(2).replace('.', ',')}</span></div>
+                    <button class="whatsapp-btn" onclick="sendToWhatsApp()">📱 Enviar Pedido via WhatsApp</button>
+                </div>`;
+            }
+            contentHTML += `</div></div>`;
+            modal.innerHTML = contentHTML;
+            modal.classList.add('active');
+        }
+
+        function closeCartModal() { document.getElementById('cartModal').classList.remove('active'); }
+
+        function updateCartItemQuantity(cartItemId, change) {
+            const itemIndex = cart.findIndex(item => item.cartItemId === cartItemId);
+            if (itemIndex > -1) {
+                cart[itemIndex].quantity += change;
+                if (cart[itemIndex].quantity <= 0) cart.splice(itemIndex, 1);
+            }
+            openCartModal();
+            updateCartDisplay();
+        }
+        
+        function handleStoreChange(storeId) { cartState.selectedStoreId = parseInt(storeId); }
+        function handleDeliveryTypeChange(type) {
+            cartState.deliveryType = type;
+            document.getElementById('delivery-info').style.display = type === 'delivery' ? 'block' : 'none';
+            if (type === 'pickup') cartState.deliveryFee = 0;
+            else handleCepChange(document.getElementById('customerCep').value); // Recalcula o frete se voltar para entrega
+            openCartModal();
+            updateCartDisplay();
+        }
+        function handleCepChange(cep) {
+            if (cartState.deliveryType === 'pickup') return;
+            const cepPrefix = cep.replace(/\D/g, '').substring(0, 5);
+            cartState.deliveryFee = DELIVERY_ZONES[cepPrefix] || DELIVERY_ZONES['default'];
+            openCartModal();
+            updateCartDisplay();
+        }
+
+        function sendToWhatsApp() {
+            const selectedStore = STORES.find(s => s.id == cartState.selectedStoreId);
+            if (!selectedStore) { alert("Erro: Loja não encontrada."); return; }
+
+            const name = document.getElementById('customerName')?.value.trim();
+            const address = document.getElementById('customerAddress')?.value.trim();
+            const number = document.getElementById('customerNumber')?.value.trim();
+            const cep = document.getElementById('customerCep')?.value.trim();
+            const paymentMethod = document.getElementById('paymentMethod').value;
+            const notes = document.getElementById('customerNotes').value.trim();
+
+            if (cartState.deliveryType === 'delivery' && (!name || !address || !number || !cep)) {
+                alert('Por favor, preencha todos os campos de entrega!'); return;
+            }
+
+            let message = `🏪 *NOVO PEDIDO - ${selectedStore.name}*\n\n`;
+            message += `*Tipo de Pedido:* ${cartState.deliveryType === 'delivery' ? 'Entrega' : 'Retirada'}\n\n`;
+            if (cartState.deliveryType === 'delivery') {
+                message += `👤 *Cliente:* ${name}\n`;
+                message += `📍 *Endereço:* ${address}, ${number}\n`;
+                message += `*CEP:* ${cep}\n\n`;
+            }
+            
+            message += `📋 *ITENS DO PEDIDO:*\n`;
+            cart.forEach(item => {
+                message += `--------------------\n*${item.quantity}x ${item.name}* (R$ ${item.unitPrice.toFixed(2).replace('.', ',')} cada)\n`;
+                if(item.selectedOptions.length > 0) { item.selectedOptions.forEach(opt => { message += ` - _${opt.name}_\n`; }); }
+            });
+            const subtotal = cart.reduce((sum, item) => sum + (item.unitPrice * item.quantity), 0);
+            const total = subtotal + (cartState.deliveryType === 'delivery' ? cartState.deliveryFee : 0);
+            message += `--------------------\n\n`;
+            message += `*Subtotal:* R$ ${subtotal.toFixed(2).replace('.', ',')}\n`;
+            if (cartState.deliveryType === 'delivery') message += `*Taxa de Entrega:* R$ ${cartState.deliveryFee.toFixed(2).replace('.', ',')}\n`;
+            message += `*TOTAL:* R$ ${total.toFixed(2).replace('.', ',')}\n\n`;
+            message += `*Forma de Pagamento:* ${paymentMethod}\n`;
+            if (notes) message += `*Observações:* ${notes}`;
+
+            window.open(`https://wa.me/${selectedStore.whatsapp}?text=${encodeURIComponent(message)}`, '_blank');
+        }
+
+    </script>
+</body>
+</html>
