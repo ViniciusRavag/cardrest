@@ -24,13 +24,6 @@
         body { font-family: 'Inter', sans-serif; background: var(--bg-light); color: var(--text-dark); padding-bottom: 100px; }
 
         /* Estilos do Cardápio Principal */
-        .header { position: relative; height: 180px; background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url('https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=1074') no-repeat center center; background-size: cover; display: flex; align-items: flex-end; padding: 20px; }
-        .restaurant-info { display: flex; align-items: center; gap: 15px; }
-        .restaurant-logo { width: 60px; height: 60px; border-radius: 8px; background: var(--white); display: flex; align-items: center; justify-content: center; border: 2px solid var(--white); overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
-        .restaurant-logo img { width: 100%; height: 100%; object-fit: cover; }
-        .restaurant-details h1 { color: var(--white); font-size: 1.5rem; font-weight: 700; text-shadow: 1px 1px 3px rgba(0,0,0,0.5); }
-        .restaurant-details p { color: var(--white); opacity: 0.9; font-size: 0.85rem; }
-        .promo-banner { background: #fff1e9; color: var(--primary-color); padding: 10px 20px; text-align: center; font-weight: 600; font-size: 0.8rem; border-bottom: 1px solid var(--border-color); }
         .category-tabs { display: flex; overflow-x: auto; padding: 15px 20px 10px; gap: 10px; background: var(--white); border-bottom: 1px solid var(--border-color); scrollbar-width: none; }
         .category-tabs::-webkit-scrollbar { display: none; }
         .category-tab { padding: 8px 16px; border-radius: 20px; background: #f1f1f1; border: 1px solid var(--border-color); white-space: nowrap; font-size: 0.85rem; font-weight: 600; color: #555; cursor: pointer; transition: all 0.3s ease; }
@@ -44,7 +37,6 @@
         .product-name { font-size: 0.9rem; font-weight: 600; color: var(--text-dark); margin-bottom: 4px; }
         .product-description { font-size: 0.75rem; color: var(--text-light); line-height: 1.4; flex-grow: 1; margin-bottom: 10px; }
         
-        /* ALTERAÇÃO VISUAL: Botão abaixo do preço */
         .product-footer {
             display: flex;
             flex-direction: column;
@@ -55,14 +47,14 @@
         .product-price { font-size: 1.1rem; font-weight: 700; color: var(--success-color); }
         .view-options-btn { background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)); color: white; border: none; border-radius: 6px; padding: 8px 12px; font-size: 0.8rem; font-weight: 600; cursor: pointer; transition: all 0.2s ease; box-shadow: 0 2px 5px rgba(255, 107, 53, 0.3); }
 
-        /* ALTERAÇÃO VISUAL: Modal estilo Popup Centralizado */
+        /* Modal estilo Popup Centralizado */
         .modal-overlay {
             position: fixed; top: 0; left: 0; right: 0; bottom: 0;
             background: rgba(0, 0, 0, 0.6);
             z-index: 2000;
             display: flex;
-            align-items: center; /* Centraliza verticalmente */
-            justify-content: center; /* Centraliza horizontalmente */
+            align-items: center;
+            justify-content: center;
             padding: 20px;
             opacity: 0;
             pointer-events: none;
@@ -72,14 +64,14 @@
         
         .modal-content {
             background: var(--white);
-            border-radius: 12px; /* Raio de borda uniforme */
+            border-radius: 12px;
             width: 100%;
-            max-width: 450px; /* Largura máxima para o popup */
+            max-width: 450px;
             max-height: 90vh;
             overflow-y: auto;
             display: flex;
             flex-direction: column;
-            transform: scale(0.95); /* Animação de escala */
+            transform: scale(0.95);
             opacity: 0;
             transition: transform 0.3s ease-out, opacity 0.2s ease-out;
         }
@@ -135,13 +127,6 @@
     </style>
 </head>
 <body>
-    <div class="header">
-        <div class="restaurant-info">
-            <div class="restaurant-logo"><img src="https://placehold.co/60x60/FFFFFF/333333?text=LE&font=raleway" alt="Logo La Encasa"></div>
-            <div class="restaurant-details"><h1>La Encasa</h1><p>Cozinha Afetiva</p></div>
-        </div>
-    </div>
-    <div class="promo-banner">🎉 Use o cupom <strong>DESCONTO10</strong> e ganhe 10% de desconto!</div>
     <div class="category-tabs">
         <div class="category-tab active" onclick="filterCategory('all', this)">Todos</div>
         <div class="category-tab" onclick="filterCategory('pizza', this)">Pizzas</div>
@@ -162,14 +147,13 @@
             { id: 2, name: "La Encasa - Loja Shopping", address: "Av. das Compras, 456", whatsapp: "5511922222222" }
         ];
         
-        // MELHORIA: Adicionado exemplo de frete grátis para o CEP "14403"
         const DELIVERY_ZONES = {
             "14010": 5.00,
             "14015": 6.00,
             "14020": 7.50,
             "14021": 8.00,
-            "14403": 0,    // Frete Grátis
-            "default": 10.00 // Frete padrão se o CEP não for encontrado
+            "14403": 0,
+            "default": 10.00
         };
         
         const PAYMENT_METHODS = ["Dinheiro", "Cartão de Crédito", "Cartão de Débito", "Pix"];
@@ -213,7 +197,6 @@
                 card.className = 'product-card';
                 const basePrice = product.price > 0 ? product.price : (product.options && product.options[0].items[0].price);
                 
-                // ALTERAÇÃO VISUAL: Descrição do produto foi removida desta renderização
                 card.innerHTML = `
                     <div class="product-image"><img src="${product.image}" alt="${product.name}" loading="lazy"></div>
                     <div class="product-info">
@@ -316,7 +299,6 @@
             document.getElementById('cartTotal').textContent = `R$ ${total.toFixed(2).replace('.', ',')}`;
             document.getElementById('floatingCart').classList.toggle('visible', totalItems > 0);
 
-            // CORREÇÃO: Atualiza o total no modal do carrinho se ele estiver aberto
             const totalPriceEl = document.getElementById('total-price-text');
             if(totalPriceEl) totalPriceEl.textContent = `R$ ${total.toFixed(2).replace('.', ',')}`;
         }
@@ -379,7 +361,7 @@
             contentHTML += `</div></div>`;
             modal.innerHTML = contentHTML;
             modal.classList.add('active');
-            handleCepChange(document.getElementById('customerCep')?.value || ''); // Calcula o frete inicial
+            handleCepChange(document.getElementById('customerCep')?.value || '');
         }
 
         function closeCartModal() { document.getElementById('cartModal').classList.remove('active'); }
@@ -390,7 +372,7 @@
                 cart[itemIndex].quantity += change;
                 if (cart[itemIndex].quantity <= 0) cart.splice(itemIndex, 1);
             }
-            openCartModal(); // Recria o modal para refletir a remoção/adição
+            openCartModal();
             updateCartDisplay();
         }
         
@@ -408,23 +390,20 @@
             updateCartDisplay();
         }
 
-        // CORREÇÃO: Função otimizada para não recarregar o modal inteiro
         function handleCepChange(cep) {
             if (cartState.deliveryType === 'pickup') return;
             const cepPrefix = cep ? cep.replace(/\D/g, '').substring(0, 5) : '';
             
-            // Só calcula se tiver o prefixo completo de 5 digitos
             if (cepPrefix.length === 5) {
                 cartState.deliveryFee = DELIVERY_ZONES[cepPrefix] || DELIVERY_ZONES['default'];
             } else {
-                cartState.deliveryFee = 0; // Taxa zero enquanto não digita o CEP completo
+                cartState.deliveryFee = 0;
             }
 
-            // Atualiza apenas os elementos necessários no DOM, sem recarregar tudo
             const feeEl = document.getElementById('delivery-fee-text');
             if (feeEl) feeEl.textContent = `R$ ${cartState.deliveryFee.toFixed(2).replace('.', ',')}`;
             
-            updateCartDisplay(); // Atualiza o total no rodapé e no botão flutuante
+            updateCartDisplay();
         }
 
         function sendToWhatsApp() {
