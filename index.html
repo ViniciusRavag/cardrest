@@ -129,10 +129,10 @@
 <body>
     <div class="category-tabs">
         <div class="category-tab active" onclick="filterCategory('all', this)">Todos</div>
-        <div class="category-tab" onclick="filterCategory('pizza', this)">Pizzas</div>
-        <div class="category-tab" onclick="filterCategory('burger', this)">Burgers</div>
-        <div class="category-tab" onclick="filterCategory('petisco', this)">Petiscos</div>
-        <div class="category-tab" onclick="filterCategory('bebida', this)">Bebidas</div>
+        <div class="category-tab" onclick="filterCategory('Entrada', this)">Entradas</div>
+        <div class="category-tab" onclick="filterCategory('Principal', this)">Principais</div>
+        <div class="category-tab" onclick="filterCategory('Sobremesa', this)">Sobremesas</div>
+        <div class="category-tab" onclick="filterCategory('Combo', this)">Combos</div>
     </div>
     <div class="products-container"><div class="products-grid" id="productsGrid"></div></div>
     <div class="floating-cart" id="floatingCart"><button class="cart-btn" onclick="openCartModal()"><span>🛒 Ver Carrinho</span><span id="cartTotal">R$ 0,00</span><div class="cart-count" id="cartCount">0</div></button></div>
@@ -159,18 +159,141 @@
         const PAYMENT_METHODS = ["Dinheiro", "Cartão de Crédito", "Cartão de Débito", "Pix"];
 
         const PRODUCTS = [
-            { id: 1, name: "Pizza Calabresa", description: "Deliciosa pizza com calabresa, cebola e azeitonas.", price: 35.00, image: "https://images.unsplash.com/photo-1593560708920-61dd98c46a4e?auto=format&fit=crop&w=435", category: "pizza" },
-            { id: 2, name: "Hambúrguer Artesanal", description: "Hambúrguer de 180g, pão brioche, alface, tomate e molho especial.", price: 20.00, image: "https://images.unsplash.com/photo-1571091718767-18b5b1457add?auto=format&fit=crop&w=872", category: "burger",
-                options: [{ title: "Adicionais", subtitle: "Escolha até 5 opções", type: "checkbox", max: 5, items: [ { name: "Muçarela", price: 5.00 }, { name: "Cheddar", price: 5.00 }, { name: "Hambúrguer Extra", price: 8.00 }, { name: "Bacon", price: 4.00 } ] }]
+    { 
+        id: 1, 
+        name: "Nachos Chilli", 
+        description: "Sequinhas tortilhas de milho chips, acompanhadas com delicioso chilli de carne moída e cheddar.", 
+        price: 28.68, 
+        image: "https://static.ifood-static.com.br/image/upload/t_medium/pratos/7d1ebf3c-fc6a-4235-821f-1860bccaffad/202109132014_1224_i.jpg", 
+        category: "Entrada" 
+    },
+    { 
+        id: 2, 
+        name: "2 Tacos Mexican Style", 
+        description: "Acompanhado de nossas exclusivas tortilhas de trigo gratinadas, servido com nossos molhos e o recheio que desejar", 
+        price: 21.60, 
+        image: "https://static.ifood-static.com.br/image/upload/t_medium/pratos/7d1ebf3c-fc6a-4235-821f-1860bccaffad/202003212202_CWSo_t.jpg", 
+        category: "Principal",
+        options: [
+            { 
+                title: "Recheio", 
+                subtitle: "Escolha até 2 opções", 
+                type: "checkbox", 
+                max: 2, 
+                items: [
+                    { name: "Al pastor - Carne suína com abacaxi", price: 0 },
+                    { name: "Chili de carne moída", price: 0 },
+                    { name: "Frango Agridoce cubos", price: 0 },
+                    { name: "Paleta Bovina - barbacoa desfiada", price: 0 },
+                    { name: "Vegetais - Azeitona, alface, queijo, milho, pimentão e pico de galo", price: 0 }
+                ] 
+            }
+        ]
+    },
+    { 
+        id: 3, 
+        name: "2 Burritos Tradicionais", 
+        description: "Tradicional tortilha de trigo de 16 cm rechada e gratinada. acompanha guacamole, salsa picante e sour cream", 
+        price: 29.50, 
+        image: "https://anamariabrogui.com.br/assets/uploads/receitas/fotos/usuario-2847-e7b65a5775641aa780fa2b34b5a624e4.jpg", 
+        category: "Principal",
+        options: [
+            { 
+                title: "Recheio", 
+                subtitle: "Escolha até 2 opções", 
+                type: "checkbox", 
+                max: 2, 
+                items: [
+                    { name: "Carne Bovina Barbacoa", price: 0 },
+                    { name: "Chili de carne moída", price: 0 },
+                    { name: "Veggie", price: 0 },
+                    { name: "Frango agridoce crocante", price: 0 }
+                ] 
+            }
+        ]
+    },
+    { 
+        id: 4, 
+        name: "Nachos Frango", 
+        description: "Sequinhas tortilhas de milho chips, acompanhadas com frango, cheddar e bacon.", 
+        price: 28.68, 
+        image: "https://assets.tmecosys.com/image/upload/t_web_rdp_recipe_584x480_1_5x/img/recipe/ras/Assets/09ADC2F0-6DCA-4C04-ABDC-25F9E771DA4E/Derivates/AD23C769-B1FA-486D-9CE5-38B7E7E106BC.jpg", 
+        category: "Entrada" 
+    },
+    { 
+        id: 5, 
+        name: "Combo Guadalupe", 
+        description: "Uma apetitosa combinação de nosso exclusivos pratos composta por: nachos crocantes, chicken nuggets com molho barbecue, batatas fritas com cheddar e bacon, 4 burritos, 4 tacos, guacamole, sour cream, salsa picante, chilli e mini churros com doce de leite", 
+        price: 135.80, 
+        image: "https://static.ifood-static.com.br/image/upload/t_medium/pratos/7d1ebf3c-fc6a-4235-821f-1860bccaffad/201903142151_comb.jpeg", 
+        category: "Combo",
+        options: [
+            { 
+                title: "Burrito", 
+                subtitle: "Selecione 4 opções", 
+                type: "checkbox", 
+                max: 4, 
+                items: [
+                    { name: "Burrito AL pastor", price: 0 },
+                    { name: "Burrito Chilli", price: 0 },
+                    { name: "Burrito vegetariano", price: 0 },
+                    { name: "Burrito frango crocante", price: 0 },
+                    { name: "Burrito Paleta e Barbacoa", price: 0 }
+                ] 
             },
-            { id: 6, name: "Batata Frita", description: "Porção generosa de batata frita crocante com maionese da casa.", price: 0, image: "https://images.unsplash.com/photo-1541592106381-b65b60662604?auto=format&fit=crop&w=435", category: "petisco",
-                options: [
-                    { title: "Escolha um tamanho", subtitle: "Selecione uma opção", type: "radio", required: true, items: [ { name: "Pequena", price: 10.00 }, { name: "Média", price: 15.00 }, { name: "Grande", price: 20.00 } ] },
-                    { title: "Turbine sua batata", subtitle: "Escolha até 2 opções", type: "checkbox", max: 2, items: [ { name: "Bacon em cubos", price: 5.00 }, { name: "Cheddar cremoso", price: 6.00 } ] }
-                ]
+            { 
+                title: "Taco", 
+                subtitle: "Escolha 4 opções", 
+                type: "checkbox", 
+                max: 4, 
+                items: [
+                    { name: "Al pastor", price: 0 },
+                    { name: "Chilli", price: 6.00 },
+                    { name: "Vegetariano", price: 0 }
+                ] 
+            }
+        ]
+    },
+    { 
+        id: 6, 
+        name: "Batata Frita", 
+        description: "Porção generosa de batata frita crocante com maionese da casa.", 
+        price: 0, 
+        image: "https://images.unsplash.com/photo-1541592106381-b65b60662604?auto=format&fit=crop&w=435", 
+        category: "Entrada",
+        options: [
+            { 
+                title: "Escolha um tamanho", 
+                subtitle: "Selecione uma opção", 
+                type: "radio", 
+                required: true, 
+                items: [
+                    { name: "Pequena", price: 10.00 },
+                    { name: "Média", price: 15.00 },
+                    { name: "Grande", price: 20.00 }
+                ] 
             },
-            { id: 5, name: "Refrigerante Lata 350ml", description: "Escolha seu sabor favorito.", price: 5.00, image: "https://images.unsplash.com/photo-1625772299848-391b6a87d7b3?auto=format&fit=crop&w=387", category: "bebida" },
-        ];
+            { 
+                title: "Turbine sua batata", 
+                subtitle: "Escolha até 2 opções", 
+                type: "checkbox", 
+                max: 2, 
+                items: [
+                    { name: "Bacon em cubos", price: 5.00 },
+                    { name: "Cheddar cremoso", price: 6.00 }
+                ] 
+            }
+        ]
+    },
+    { 
+        id: 7, 
+        name: "Mini Churros com Doce de Leite", 
+        description: "Delicioso doce tradicional", 
+        price: 12.00, 
+        image: "https://www.portonovoalimentos.com.br/medias/news/depositphotos-406675082-xl.jpg?w=600&h=auto&fit=fit&crop=center", 
+        category: "Sobremesa" 
+    }
+];
 
         // --- ESTADO DA APLICAÇÃO ---
         let cart = [];
@@ -203,7 +326,7 @@
                         <div class="product-name">${product.name}</div>
                         <div class="product-footer">
                             <span class="product-price">${(product.price === 0) ? 'A partir de' : ''} R$ ${basePrice.toFixed(2).replace('.', ',')}</span>
-                            <button class="view-options-btn" onclick="openOptionsModal(${product.id})">Ver Opções</button>
+                            <button class="view-options-btn" onclick="openOptionsModal(${product.id})">Ver Detalhes</button>
                         </div>
                     </div>`;
                 grid.appendChild(card);
