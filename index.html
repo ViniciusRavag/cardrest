@@ -10,7 +10,7 @@
     <style>
         :root {
             --primary-color: #ff6b35;
-            --secondary-color: #f7931e;
+--secondary-color: #f7931e;
             --text-dark: #333;
             --text-light: #777;
             --bg-light: #f8f8f8;
@@ -18,64 +18,85 @@
             --border-color: #e0e0e0;
             --success-color: #28a745;
             --danger-color: #d9534f;
-        }
+}
 
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Inter', sans-serif; background: var(--bg-light); color: var(--text-dark); padding-bottom: 100px; }
+        * { margin: 0; padding: 0; box-sizing: border-box;
+}
+        body { font-family: 'Inter', sans-serif; background: var(--bg-light); color: var(--text-dark); padding-bottom: 100px;
+}
 
         /* --- ALTERAÇÃO 4: Adicionado para congelar o scroll quando o modal está aberto --- */
         body.modal-open {
             overflow: hidden;
-        }
+}
 
         /* Estilos do Cardápio Principal */
-        .category-tabs { display: flex; overflow-x: auto; padding: 15px 20px 10px; gap: 10px; background: var(--white); border-bottom: 1px solid var(--border-color); scrollbar-width: none; }
-        .category-tabs::-webkit-scrollbar { display: none; }
-        .category-tab { padding: 8px 16px; border-radius: 20px; background: #f1f1f1; border: 1px solid var(--border-color); white-space: nowrap; font-size: 0.85rem; font-weight: 600; color: #555; cursor: pointer; transition: all 0.3s ease; }
-        .category-tab.active { background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)); color: var(--white); border-color: var(--primary-color); }
-        .products-container { padding: 20px 15px; }
-        .products-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        .product-card { background: var(--white); border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.07); display: flex; flex-direction: column; }
-        .product-image { width: 100%; height: 120px; background: #eee; }
-        .product-image img { width: 100%; height: 100%; object-fit: cover; }
-        .product-info { padding: 12px; display: flex; flex-direction: column; flex-grow: 1; }
-        .product-name { font-size: 0.9rem; font-weight: 600; color: var(--text-dark); margin-bottom: 8px; /* Aumentado margin-bottom */ flex-grow: 1; }
-        .product-description { font-size: 0.75rem; color: var(--text-light); line-height: 1.4; flex-grow: 1; margin-bottom: 10px; }
+        .category-tabs { display: flex;
+overflow-x: auto; padding: 15px 20px 10px; gap: 10px; background: var(--white); border-bottom: 1px solid var(--border-color); scrollbar-width: none;
+}
+        .category-tabs::-webkit-scrollbar { display: none;
+}
+        .category-tab { padding: 8px 16px; border-radius: 20px; background: #f1f1f1;
+border: 1px solid var(--border-color); white-space: nowrap; font-size: 0.85rem; font-weight: 600; color: #555; cursor: pointer; transition: all 0.3s ease;
+}
+        .category-tab.active { background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)); color: var(--white); border-color: var(--primary-color);
+}
+        .products-container { padding: 20px 15px;
+}
+        .products-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px;
+}
+        .product-card { background: var(--white); border-radius: 12px; overflow: hidden;
+box-shadow: 0 2px 8px rgba(0,0,0,0.07); display: flex; flex-direction: column; }
+        .product-image { width: 100%;
+height: 120px; background: #eee; }
+        .product-image img { width: 100%; height: 100%;
+object-fit: cover; }
+        .product-info { padding: 12px; display: flex; flex-direction: column; flex-grow: 1;
+}
+        .product-name { font-size: 0.9rem; font-weight: 600; color: var(--text-dark); margin-bottom: 8px;
+/* Aumentado margin-bottom */ flex-grow: 1; }
+        .product-description { font-size: 0.75rem; color: var(--text-light);
+line-height: 1.4; flex-grow: 1; margin-bottom: 10px; }
         
         .product-footer {
             display: flex;
-            flex-direction: column;
+flex-direction: column;
             gap: 8px;
             margin-top: auto;
             /* --- ALTERAÇÃO 1: Removido align-items para permitir que o botão ocupe a largura total --- */
         }
-        .product-price { font-size: 1.1rem; font-weight: 700; color: var(--success-color); padding: 0 4px; /* Adicionado padding para alinhar com o botão */ }
+        .product-price { font-size: 1.1rem;
+font-weight: 700; color: var(--success-color); padding: 0 4px; /* Adicionado padding para alinhar com o botão */ }
         .view-options-btn { 
-            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)); color: white; border: none; border-radius: 6px; font-size: 0.8rem; font-weight: 600; cursor: pointer; transition: all 0.2s ease; box-shadow: 0 2px 5px rgba(255, 107, 53, 0.3);
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+color: white; border: none; border-radius: 6px; font-size: 0.8rem; font-weight: 600; cursor: pointer; transition: all 0.2s ease;
+box-shadow: 0 2px 5px rgba(255, 107, 53, 0.3);
             /* --- ALTERAÇÃO 1: Padding aumentado e largura total --- */
-            padding: 12px; 
-            width: 100%;
+            padding: 12px;
+width: 100%;
             text-align: center;
         }
 
         /* Modal estilo Popup Centralizado */
         .modal-overlay {
-            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            position: fixed;
+top: 0; left: 0; right: 0; bottom: 0;
             background: rgba(0, 0, 0, 0.6);
             z-index: 2000;
             display: flex;
             align-items: center;
-            justify-content: center;
+justify-content: center;
             padding: 20px;
             opacity: 0;
             pointer-events: none;
             transition: opacity 0.3s ease;
-        }
-        .modal-overlay.active { opacity: 1; pointer-events: auto; }
+}
+        .modal-overlay.active { opacity: 1; pointer-events: auto;
+}
         
         .modal-content {
             background: var(--white);
-            border-radius: 12px;
+border-radius: 12px;
             width: 100%;
             max-width: 450px;
             max-height: 90vh;
@@ -84,70 +105,127 @@
             flex-direction: column;
             transform: scale(0.95);
             opacity: 0;
-            transition: transform 0.3s ease-out, opacity 0.2s ease-out;
+transition: transform 0.3s ease-out, opacity 0.2s ease-out;
         }
-        .modal-overlay.active .modal-content { transform: scale(1); opacity: 1; }
+        .modal-overlay.active .modal-content { transform: scale(1);
+opacity: 1; }
         
-        .modal-header { padding: 15px 20px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; background: var(--white); position: sticky; top: 0; z-index: 10; }
-        .modal-title { font-size: 1.2rem; font-weight: bold; }
-        .close-btn { background: none; border: none; font-size: 1.8rem; color: #888; cursor: pointer; }
-        .modal-body { padding: 0 20px 20px; flex-grow: 1; }
-        .modal-footer { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; border-top: 1px solid var(--border-color); background: var(--white); position: sticky; bottom: 0; }
+        .modal-header { padding: 15px 20px;
+border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; background: var(--white); position: sticky; top: 0; z-index: 10;
+}
+        .modal-title { font-size: 1.2rem; font-weight: bold;
+}
+        .close-btn { background: none; border: none; font-size: 1.8rem; color: #888; cursor: pointer;
+}
+        .modal-body { padding: 0 20px 20px; flex-grow: 1;
+}
+        .modal-footer { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px;
+border-top: 1px solid var(--border-color); background: var(--white); position: sticky; bottom: 0;
+}
 
         /* Modal de Opções */
-        #optionsModal .modal-body { padding: 0; }
-        .options-product-image { width: 100%; height: 180px; object-fit: cover; }
-        .options-product-details { padding: 15px 20px; }
-        .options-product-details .product-description { font-size: 0.9rem; margin-bottom: 15px; }
-        .option-group { border-top: 1px solid var(--border-color); padding: 15px 20px; }
-        .option-group-title { font-size: 1rem; font-weight: 700; margin-bottom: 5px; }
-        .option-group-subtitle { font-size: 0.8rem; color: var(--text-light); margin-bottom: 15px; }
-        .option-item { display: flex; flex-direction: column; align-items: flex-start; padding: 12px 0; }
-        .option-item-main { display: flex; justify-content: space-between; align-items: center; width: 100%; }
-        .option-item label { display: flex; align-items: center; gap: 10px; font-size: 0.9rem; font-weight: 500; flex-grow: 1; }
-        .option-item input[type="radio"], .option-item input[type="checkbox"] { width: 20px; height: 20px; accent-color: var(--primary-color); }
-        .option-price { font-size: 0.9rem; font-weight: 500; color: var(--text-dark); }
+        #optionsModal .modal-body { padding: 0;
+}
+        .options-product-image { width: 100%; height: 180px; object-fit: cover;
+}
+        .options-product-details { padding: 15px 20px;
+}
+        .options-product-details .product-description { font-size: 0.9rem; margin-bottom: 15px;
+}
+        .option-group { border-top: 1px solid var(--border-color); padding: 15px 20px;
+}
+        .option-group-title { font-size: 1rem; font-weight: 700; margin-bottom: 5px;
+}
+        .option-group-subtitle { font-size: 0.8rem; color: var(--text-light); margin-bottom: 15px;
+}
+        .option-item { display: flex; flex-direction: column; align-items: flex-start; padding: 12px 0;
+}
+        .option-item-main { display: flex; justify-content: space-between; align-items: center; width: 100%;
+}
+        .option-item label { display: flex; align-items: center; gap: 10px; font-size: 0.9rem;
+font-weight: 500; flex-grow: 1; }
+        .option-item input[type="radio"], .option-item input[type="checkbox"] { width: 20px;
+height: 20px; accent-color: var(--primary-color); }
+        .option-price { font-size: 0.9rem; font-weight: 500; color: var(--text-dark);
+}
         /* --- ALTERAÇÃO 2: Estilo para a descrição da opção --- */
         .option-item-description {
             font-size: 0.8rem;
-            color: var(--text-light);
+color: var(--text-light);
             padding-left: 30px; /* Alinha com o texto da opção, considerando o gap e o tamanho do input */
             margin-top: 2px;
-        }
-        .quantity-controls { display: flex; align-items: center; gap: 15px; }
-        .qty-btn { width: 35px; height: 35px; border-radius: 50%; border: 1px solid var(--primary-color); background: var(--white); color: var(--primary-color); font-size: 1.5rem; display: flex; align-items: center; justify-content: center; cursor: pointer; }
-        .qty-btn:last-child { background: var(--primary-color); color: var(--white); }
-        .quantity { font-size: 1.1rem; font-weight: 600; }
-        .add-to-cart-btn { background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)); color: var(--white); border: none; border-radius: 8px; padding: 12px 20px; font-size: 0.9rem; font-weight: 600; cursor: pointer; display: flex; gap: 10px; }
-        .add-to-cart-btn .price { background: rgba(0,0,0,0.1); padding: 2px 8px; border-radius: 5px; }
+}
+        .quantity-controls { display: flex; align-items: center; gap: 15px;
+}
+        .qty-btn { width: 35px; height: 35px; border-radius: 50%; border: 1px solid var(--primary-color);
+background: var(--white); color: var(--primary-color); font-size: 1.5rem; display: flex; align-items: center; justify-content: center; cursor: pointer;
+}
+        .qty-btn:last-child { background: var(--primary-color); color: var(--white);
+}
+        .quantity { font-size: 1.1rem; font-weight: 600;
+}
+        .add-to-cart-btn { background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)); color: var(--white); border: none; border-radius: 8px;
+padding: 12px 20px; font-size: 0.9rem; font-weight: 600; cursor: pointer; display: flex; gap: 10px;
+}
+        .add-to-cart-btn .price { background: rgba(0,0,0,0.1); padding: 2px 8px; border-radius: 5px;
+}
 
         /* Carrinho Flutuante e Modal do Carrinho */
-        .floating-cart { position: fixed; bottom: 20px; left: 50%; z-index: 1000; transition: opacity 0.3s, transform 0.3s; opacity: 0; transform: translate(-50%, 20px); pointer-events: none; }
-        .floating-cart.visible { opacity: 1; transform: translateX(-50%); pointer-events: auto; }
-        .cart-btn { background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)); color: white; border: none; border-radius: 50px; padding: 12px 25px; display: flex; align-items: center; gap: 10px; font-size: 0.9rem; font-weight: 600; cursor: pointer; box-shadow: 0 4px 20px rgba(0,0,0, 0.2); min-width: 220px; justify-content: space-between; }
-        .cart-count { background: rgba(255, 255, 255, 0.2); border-radius: 50%; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; font-weight: bold; }
-        .empty-cart { text-align: center; padding: 50px 20px; color: var(--text-light); }
+        .floating-cart { position: fixed;
+bottom: 20px; left: 50%; z-index: 1000; transition: opacity 0.3s, transform 0.3s; opacity: 0; transform: translate(-50%, 20px); pointer-events: none;
+}
+        .floating-cart.visible { opacity: 1; transform: translateX(-50%); pointer-events: auto;
+}
+        .cart-btn { background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)); color: white; border: none; border-radius: 50px;
+padding: 12px 25px; display: flex; align-items: center; gap: 10px; font-size: 0.9rem; font-weight: 600; cursor: pointer;
+box-shadow: 0 4px 20px rgba(0,0,0, 0.2); min-width: 220px; justify-content: space-between;
+}
+        .cart-count { background: rgba(255, 255, 255, 0.2); border-radius: 50%; width: 24px;
+height: 24px; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; font-weight: bold;
+}
+        .empty-cart { text-align: center; padding: 50px 20px; color: var(--text-light);
+}
         
         /* --- ALTERAÇÃO 3: Layout do item do carrinho reestruturado --- */
-        .cart-item { display: flex; gap: 15px; padding: 15px 0; border-bottom: 1px solid #f0f0f0; }
-        .cart-item-image img { width: 60px; height: 60px; border-radius: 8px; object-fit: cover; flex-shrink: 0; }
-        .cart-item-content { flex-grow: 1; display: flex; flex-direction: column; }
-        .cart-item-name { font-weight: 600; margin-bottom: 4px; }
-        .cart-item-details { font-size: 0.8rem; color: var(--text-light); list-style-position: inside; padding-left: 5px; }
-        .cart-item-footer { display: flex; justify-content: space-between; align-items: center; margin-top: auto; padding-top: 10px; }
-        .cart-item-price { font-size: 1rem; font-weight: 600; color: var(--text-dark); }
+        .cart-item { display: flex;
+gap: 15px; padding: 15px 0; border-bottom: 1px solid #f0f0f0; }
+        .cart-item-image img { width: 60px;
+height: 60px; border-radius: 8px; object-fit: cover; flex-shrink: 0; }
+        .cart-item-content { flex-grow: 1;
+display: flex; flex-direction: column; }
+        .cart-item-name { font-weight: 600; margin-bottom: 4px;
+}
+        .cart-item-details { font-size: 0.8rem; color: var(--text-light); list-style-position: inside; padding-left: 5px;
+}
+        .cart-item-footer { display: flex; justify-content: space-between; align-items: center; margin-top: auto; padding-top: 10px;
+}
+        .cart-item-price { font-size: 1rem; font-weight: 600; color: var(--text-dark);
+}
         
-        .cart-section { background: var(--white); padding: 20px; border-radius: 12px; margin: 20px 0; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
-        .cart-section-title { font-size: 1rem; font-weight: 700; margin-bottom: 15px; }
-        .total-row { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 0.9rem; color: #555; }
-        .total-row.final { font-size: 1.2rem; font-weight: bold; color: var(--text-dark); padding-top: 10px; border-top: 1px solid var(--border-color); margin-top: 10px; }
-        .form-group { margin-bottom: 15px; }
-        .form-label { display: block; margin-bottom: 6px; font-weight: 600; font-size: 0.9rem; }
-        .form-input, .form-select { width: 100%; padding: 12px; border: 1px solid var(--border-color); border-radius: 8px; font-size: 0.9rem; background: #fdfdfd; }
-        .form-input:focus, .form-select:focus { outline: none; border-color: var(--primary-color); }
-        .delivery-type-group { display: flex; gap: 10px; margin-bottom: 15px; }
-        .delivery-type-group label { display: flex; align-items: center; gap: 8px; }
-        .whatsapp-btn { width: 100%; padding: 15px; background: linear-gradient(135deg, #25d366, #128c7e); color: white; border: none; border-radius: 10px; font-size: 1rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; margin-top: 20px; }
+        .cart-section { background: var(--white);
+padding: 20px; border-radius: 12px; margin: 20px 0; box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+        .cart-section-title { font-size: 1rem; font-weight: 700; margin-bottom: 15px;
+}
+        .total-row { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 0.9rem; color: #555;
+}
+        .total-row.final { font-size: 1.2rem; font-weight: bold; color: var(--text-dark); padding-top: 10px;
+border-top: 1px solid var(--border-color); margin-top: 10px; }
+        .form-group { margin-bottom: 15px;
+}
+        .form-label { display: block; margin-bottom: 6px; font-weight: 600; font-size: 0.9rem;
+}
+        .form-input, .form-select { width: 100%; padding: 12px; border: 1px solid var(--border-color);
+border-radius: 8px; font-size: 0.9rem; background: #fdfdfd; }
+        .form-input:focus, .form-select:focus { outline: none;
+border-color: var(--primary-color); }
+        .delivery-type-group { display: flex; gap: 10px; margin-bottom: 15px;
+}
+        .delivery-type-group label { display: flex; align-items: center; gap: 8px;
+}
+        .whatsapp-btn { width: 100%; padding: 15px; background: linear-gradient(135deg, #25d366, #128c7e); color: white;
+border: none; border-radius: 10px; font-size: 1rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; margin-top: 20px;
+}
     </style>
 </head>
 <body>
@@ -162,7 +240,8 @@
     <div class="floating-cart" id="floatingCart"><button class="cart-btn" onclick="openCartModal()"><span>🛒 Ver Carrinho</span><span id="cartTotal">R$ 0,00</span><div class="cart-count" id="cartCount">0</div></button></div>
 
     <div class="modal-overlay" id="optionsModal"></div>
-    <div class="modal-overlay" id="cartModal"></div>
+    
+<div class="modal-overlay" id="cartModal"></div>
 
     <script>
         // --- CONFIGURAÇÕES GLOBAIS ---
@@ -185,13 +264,12 @@
                 options: [{ 
                     title: "Recheio", subtitle: "Escolha até 2 opções", type: "checkbox", max: 2, 
                     items: [
-                        { name: "Al pastor - Carne suína com abacaxi", price: 0 },
+                         { name: "Al pastor - Carne suína com abacaxi", price: 0 },
                         { name: "Chili de carne moída", price: 0 },
                         { name: "Frango Agridoce cubos", price: 0 },
-                        { name: "Paleta Bovina - barbacoa desfiada", price: 0 },
-                        // --- ALTERAÇÃO 2: Adicionada a propriedade 'description' na opção ---
+                         { name: "Paleta Bovina - barbacoa desfiada", price: 0 },
                         { name: "Vegetais", price: 0, description: "Azeitona, alface, queijo, milho, pimentão e pico de galo" }
-                    ] 
+                     ] 
                 }]
             },
             { 
@@ -199,7 +277,7 @@
                 options: [{ 
                     title: "Recheio", subtitle: "Escolha até 2 opções", type: "checkbox", max: 2, 
                     items: [
-                        { name: "Carne Bovina Barbacoa", price: 0 }, { name: "Chili de carne moída", price: 0 },
+                         { name: "Carne Bovina Barbacoa", price: 0 }, { name: "Chili de carne moída", price: 0 },
                         { name: "Veggie", price: 0 }, { name: "Frango agridoce crocante", price: 0 }
                     ] 
                 }]
@@ -221,7 +299,6 @@
             },
             { id: 7, name: "Mini Churros com Doce de Leite", description: "Delicioso doce tradicional", price: 12.00, image: "https://www.portonovoalimentos.com.br/medias/news/depositphotos-406675082-xl.jpg?w=600&h=auto&fit=fit&crop=center", category: "Sobremesa" }
         ];
-
         // --- ESTADO DA APLICAÇÃO ---
         let cart = [];
         let currentCategory = 'all';
@@ -230,13 +307,11 @@
             deliveryType: 'delivery',
             deliveryFee: 0
         };
-
         // --- INICIALIZAÇÃO ---
         document.addEventListener('DOMContentLoaded', () => {
             renderProducts();
             updateCartDisplay();
         });
-
         // --- RENDERIZAÇÃO ---
         function renderProducts() {
             const grid = document.getElementById('productsGrid');
@@ -247,15 +322,14 @@
                 card.className = 'product-card';
                 const basePrice = product.price > 0 ? product.price : (product.options && product.options[0].items[0].price);
                 
-                // --- ALTERAÇÃO: Removida a div da descrição do produto do card ---
                 card.innerHTML = `
                     <div class="product-image"><img src="${product.image}" alt="${product.name}" loading="lazy"></div>
                     <div class="product-info">
                         <div class="product-name">${product.name}</div>
-                        <div class="product-footer">
+                         <div class="product-footer">
                             <span class="product-price">${(product.price === 0) ? 'A partir de' : ''} R$ ${basePrice.toFixed(2).replace('.', ',')}</span>
                             <button class="view-options-btn" onclick="openOptionsModal(${product.id})">Ver Detalhes</button>
-                        </div>
+                         </div>
                     </div>`;
                 grid.appendChild(card);
             });
@@ -279,16 +353,21 @@
                     optionsHTML += `<div class="option-group"><div class="option-group-title">${group.title}</div><div class="option-group-subtitle">${group.subtitle}</div>`;
                     group.items.forEach((item, itemIndex) => {
                         const inputId = `group-${groupIndex}-item-${itemIndex}`;
-                        // --- ALTERAÇÃO 2: Renderiza a descrição da opção, se existir ---
                         const descriptionHTML = item.description ? `<div class="option-item-description">${item.description}</div>` : '';
+                        
+                        let onChangeAction = `updateOptionPrice(${productId})`;
+                        if (group.type === 'checkbox' && group.max) {
+                            onChangeAction = `handleOptionChange(event, ${productId}, ${group.max})`;
+                        }
+
                         optionsHTML += `<div class="option-item">
-                            <div class="option-item-main">
+                             <div class="option-item-main">
                                 <label for="${inputId}">
-                                    <input type="${group.type}" id="${inputId}" name="group-${groupIndex}" value="${item.price}" data-name="${item.name}" onchange="updateOptionPrice(${productId})">
-                                    ${item.name}
+                                    <input type="${group.type}" id="${inputId}" name="group-${groupIndex}" value="${item.price}" data-name="${item.name}" onchange="${onChangeAction}">
+                                     ${item.name}
                                 </label>
                                 <span class="option-price">+ R$ ${item.price.toFixed(2).replace('.', ',')}</span>
-                            </div>
+                             </div>
                             ${descriptionHTML}
                         </div>`;
                     });
@@ -306,19 +385,33 @@
                     <div class="quantity-controls"><button class="qty-btn" onclick="updateOptionQuantity(-1, ${productId})">-</button><span class="quantity" id="options-quantity">1</span><button class="qty-btn" onclick="updateOptionQuantity(1, ${productId})">+</button></div>
                     <button class="add-to-cart-btn" onclick="addItemToCartFromModal(${productId})">Adicionar <span class="price" id="options-total-price"></span></button>
                 </div></div>`;
-            
-            // --- ALTERAÇÃO 4: Adiciona a classe para congelar o scroll ---
             document.body.classList.add('modal-open');
             modal.classList.add('active');
             updateOptionPrice(productId);
         }
         function closeOptionsModal() { 
             document.getElementById('optionsModal').classList.remove('active');
-            // --- ALTERAÇÃO 4: Remove a classe para liberar o scroll ---
             if (!document.getElementById('cartModal').classList.contains('active')) {
                 document.body.classList.remove('modal-open');
             }
         }
+
+        // *** FUNÇÃO CORRIGIDA ***
+        function handleOptionChange(event, productId, maxLimit) {
+            const checkbox = event.target;
+            const groupName = checkbox.name;
+            const modal = document.getElementById('optionsModal');
+            const checkedCount = modal.querySelectorAll(`input[name="${groupName}"]:checked`).length;
+
+            if (checkedCount > maxLimit) {
+                alert(`Você pode escolher no máximo ${maxLimit} opções para este grupo.`);
+                checkbox.checked = false; // Desfaz a seleção inválida
+            }
+
+            // Sempre atualiza o preço no final para refletir o estado correto das seleções
+            updateOptionPrice(productId);
+        }
+
         function updateOptionQuantity(change, productId) {
             const qtyEl = document.getElementById('options-quantity');
             let quantity = parseInt(qtyEl.textContent) + change;
@@ -346,7 +439,7 @@
             let selectedOptions = [];
             const radio = content.querySelector('input[type="radio"]:checked');
             if (radio) { 
-                basePrice = parseFloat(radio.value); 
+                basePrice = parseFloat(radio.value);
                 selectedOptions.push({ name: radio.dataset.name }); 
             }
             content.querySelectorAll('input[type="checkbox"]:checked').forEach(box => { 
@@ -383,28 +476,26 @@
             let contentHTML = `<div class="modal-content">
                 <div class="modal-header"><h3 class="modal-title">🛒 Finalizar Pedido</h3><button class="close-btn" onclick="closeCartModal()">&times;</button></div>
                 <div class="modal-body">`;
-
             if (cart.length === 0) {
                 contentHTML += `<div class="empty-cart"><h3>Seu carrinho está vazio</h3></div>`;
             } else {
                 let itemsHTML = '<div class="cart-section">';
                 cart.forEach(item => {
                     let optionsText = item.selectedOptions.map(opt => `<li>${opt.name}</li>`).join('');
-                    // --- ALTERAÇÃO 3: Nova estrutura HTML para o item do carrinho ---
                     itemsHTML += `<div class="cart-item">
-                        <div class="cart-item-image"><img src="${item.image}" alt="${item.name}"></div>
+                         <div class="cart-item-image"><img src="${item.image}" alt="${item.name}"></div>
                         <div class="cart-item-content">
                             <div>
                                 <div class="cart-item-name">${item.quantity}x ${item.name}</div>
-                                ${optionsText ? `<ul class="cart-item-details">${optionsText}</ul>` : ''}
+                                     ${optionsText ? `<ul class="cart-item-details">${optionsText}</ul>` : ''}
                             </div>
                             <div class="cart-item-footer">
-                                <span class="cart-item-price">R$ ${(item.unitPrice * item.quantity).toFixed(2).replace('.', ',')}</span>
+                                 <span class="cart-item-price">R$ ${(item.unitPrice * item.quantity).toFixed(2).replace('.', ',')}</span>
                                 <div class="quantity-controls">
                                     <button class="qty-btn" onclick="updateCartItemQuantity('${item.cartItemId}', -1)">-</button>
-                                    <span class="quantity">${item.quantity}</span>
+                                     <span class="quantity">${item.quantity}</span>
                                     <button class="qty-btn" onclick="updateCartItemQuantity('${item.cartItemId}', 1)">+</button>
-                                </div>
+                                 </div>
                             </div>
                         </div>
                     </div>`;
@@ -419,26 +510,25 @@
                     <div class="form-group">
                         <label class="form-label">Estabelecimento para Entrega/Retirada</label>
                         <select class="form-select" id="storeSelect" onchange="handleStoreChange(this.value)">
-                            ${STORES.map(s => `<option value="${s.id}" ${s.id == cartState.selectedStoreId ? 'selected' : ''}>${s.name}</option>`).join('')}
+                         ${STORES.map(s => `<option value="${s.id}" ${s.id == cartState.selectedStoreId ? 'selected' : ''}>${s.name}</option>`).join('')}
                         </select>
                     </div>
                     <div class="form-group delivery-type-group">
-                        <label><input type="radio" name="deliveryType" value="pickup" onchange="handleDeliveryTypeChange(this.value)" ${cartState.deliveryType === 'pickup' ? 'checked' : ''}> Retirada</label>
+                         <label><input type="radio" name="deliveryType" value="pickup" onchange="handleDeliveryTypeChange(this.value)" ${cartState.deliveryType === 'pickup' ? 'checked' : ''}> Retirada</label>
                         <label><input type="radio" name="deliveryType" value="delivery" onchange="handleDeliveryTypeChange(this.value)" ${cartState.deliveryType === 'delivery' ? 'checked' : ''}> Entrega</label>
                     </div>
                     <div id="delivery-info" style="display: ${cartState.deliveryType === 'delivery' ? 'block' : 'none'}">
                         <div class="form-group"><label class="form-label">Seu Nome</label><input type="text" class="form-input" id="customerName"></div>
-                        <div class="form-group"><label class="form-label">Endereço de Entrega</label><input type="text" class="form-input" id="customerAddress" placeholder="Rua, Avenida, etc."></div>
+                         <div class="form-group"><label class="form-label">Endereço de Entrega</label><input type="text" class="form-input" id="customerAddress" placeholder="Rua, Avenida, etc."></div>
                         <div class="form-group"><label class="form-label">Número</label><input type="text" class="form-input" id="customerNumber"></div>
                         <div class="form-group"><label class="form-label">CEP</label><input type="text" class="form-input" id="customerCep" placeholder="00000-000" onkeyup="handleCepChange(this.value)"></div>
                     </div>
-                    <div class="form-group">
+                     <div class="form-group">
                         <label class="form-label">Forma de Pagamento</label>
                         <select class="form-select" id="paymentMethod">${PAYMENT_METHODS.map(p => `<option value="${p}">${p}</option>`).join('')}</select>
                     </div>
-                    <div class="form-group"><label class="form-label">Observações</label><textarea class="form-input" id="customerNotes" rows="2" placeholder="Alguma observação especial sobre o pedido?"></textarea></div>
+                     <div class="form-group"><label class="form-label">Observações</label><textarea class="form-input" id="customerNotes" rows="2" placeholder="Alguma observação especial sobre o pedido?"></textarea></div>
                 </div>`;
-
                 contentHTML += `<div class="cart-section">
                     <div class="total-row"><span>Subtotal:</span><span>R$ ${subtotal.toFixed(2).replace('.', ',')}</span></div>
                     <div class="total-row"><span>Taxa de entrega:</span><span id="delivery-fee-text">R$ ${cartState.deliveryFee.toFixed(2).replace('.', ',')}</span></div>
@@ -448,7 +538,6 @@
             }
             contentHTML += `</div></div>`;
             modal.innerHTML = contentHTML;
-            // --- ALTERAÇÃO 4: Adiciona a classe para congelar o scroll ---
             document.body.classList.add('modal-open');
             modal.classList.add('active');
             handleCepChange(document.getElementById('customerCep')?.value || '');
@@ -456,7 +545,6 @@
 
         function closeCartModal() { 
             document.getElementById('cartModal').classList.remove('active');
-            // --- ALTERAÇÃO 4: Remove a classe para liberar o scroll ---
             if (!document.getElementById('optionsModal').classList.contains('active')) {
                 document.body.classList.remove('modal-open');
             }
@@ -468,8 +556,8 @@
                 cart[itemIndex].quantity += change;
                 if (cart[itemIndex].quantity <= 0) cart.splice(itemIndex, 1);
             }
-            openCartModal(); // Re-renderiza o modal do carrinho para refletir a mudança
-            updateCartDisplay(); // Atualiza o botão flutuante
+            openCartModal();
+            updateCartDisplay();
         }
         
         function handleStoreChange(storeId) { cartState.selectedStoreId = parseInt(storeId); }
@@ -489,7 +577,6 @@
         function handleCepChange(cep) {
             if (cartState.deliveryType === 'pickup') return;
             const cepPrefix = cep ? cep.replace(/\D/g, '').substring(0, 5) : '';
-            
             if (cepPrefix.length === 5) {
                 cartState.deliveryFee = DELIVERY_ZONES[cepPrefix] || DELIVERY_ZONES['default'];
             } else {
@@ -512,9 +599,9 @@
             const cep = document.getElementById('customerCep')?.value.trim();
             const paymentMethod = document.getElementById('paymentMethod').value;
             const notes = document.getElementById('customerNotes').value.trim();
-
             if (cartState.deliveryType === 'delivery' && (!name || !address || !number || !cep)) {
-                alert('Por favor, preencha todos os campos de entrega!'); return;
+                alert('Por favor, preencha todos os campos de entrega!');
+                return;
             }
 
             let message = `🏪 *NOVO PEDIDO - ${selectedStore.name}*\n\n`;
@@ -528,18 +615,16 @@
             message += `📋 *ITENS DO PEDIDO:*\n`;
             cart.forEach(item => {
                 message += `--------------------\n*${item.quantity}x ${item.name}* (R$ ${item.unitPrice.toFixed(2).replace('.', ',')} cada)\n`;
-                 // --- ALTERAÇÃO 2: A lógica para exibir as opções já estava correta ---
                 if(item.selectedOptions.length > 0) { 
                     item.selectedOptions.forEach(opt => { 
-                        // Encontra a descrição original para adicionar à mensagem do WhatsApp para clareza
                         const product = PRODUCTS.find(p => p.id === item.id);
                         const originalOption = product.options.flatMap(g => g.items).find(i => i.name === opt.name);
                         if (originalOption && originalOption.description) {
                              message += ` - _${opt.name} (${originalOption.description})_\n`;
                         } else {
-                             message += ` - _${opt.name}_\n`;
+                              message += ` - _${opt.name}_\n`;
                         }
-                    }); 
+                    });
                 }
             });
             const subtotal = cart.reduce((sum, item) => sum + (item.unitPrice * item.quantity), 0);
