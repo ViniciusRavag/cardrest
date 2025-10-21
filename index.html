@@ -453,26 +453,134 @@ justify-content: center;
 gap: 10px;
 margin-top: 20px;
 }
+
+/* Tipo de Pizza Selection Screen */
+.type-selection-screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  min-height: 100vh;
+  background: var(--bg-light);
+}
+.type-selection-title {
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin-bottom: 30px;
+  color: var(--primary-color);
+  text-align: center;
+}
+.type-options {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 15px;
+  width: 100%;
+  max-width: 500px;
+}
+.type-option {
+  background: var(--white);
+  border: 2px solid var(--border-color);
+  border-radius: 12px;
+  padding: 20px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.type-option:hover {
+  border-color: var(--primary-color);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+.type-option.selected {
+  border-color: var(--primary-color);
+  background: rgba(211, 47, 47, 0.05);
+}
+.type-option h3 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text-dark);
+}
+.type-option .price {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--success-color);
+}
+.continue-btn {
+  background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+  color: white;
+  border: none;
+  border-radius: 10px;
+  padding: 15px 30px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 30px;
+  width: 250px;
+  box-shadow: 0 4px 15px rgba(211, 47, 47, 0.3);
+}
+.back-btn {
+  background: #666;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  padding: 10px 20px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 20px;
+}
 </style>
 </head>
 <body>
-<div class="category-tabs">
-<div class="category-tab active" onclick="filterCategory('all', this)">Todos</div>
-<div class="category-tab" onclick="filterCategory('Tradicional', this)">Tradicional</div>
-<div class="category-tab" onclick="filterCategory('Especial', this)">Especiais</div>
-<div class="category-tab" onclick="filterCategory('Doce', this)">Doces</div>
+<div id="typeSelectionScreen" class="type-selection-screen">
+  <h2 class="type-selection-title">Escolha o tipo de pizza</h2>
+  <div class="type-options" id="typeOptions">
+    <div class="type-option" data-type="pre-assada-sem-borda" data-price="39.00">
+      <h3>Pré assada sem borda</h3>
+      <span class="price">R$ 39,00</span>
+    </div>
+    <div class="type-option" data-type="pre-assada-com-borda" data-price="45.00">
+      <h3>Pré assada com borda</h3>
+      <span class="price">R$ 45,00</span>
+    </div>
+    <div class="type-option" data-type="assada-sem-borda" data-price="49.00">
+      <h3>Assada sem borda</h3>
+      <span class="price">R$ 49,00</span>
+    </div>
+    <div class="type-option" data-type="assada-com-borda" data-price="55.00">
+      <h3>Assada com borda</h3>
+      <span class="price">R$ 55,00</span>
+    </div>
+    <div class="type-option" data-type="brotinho" data-price="32.00">
+      <h3>Brotinho</h3>
+      <span class="price">R$ 32,00</span>
+    </div>
+  </div>
+  <button class="continue-btn" onclick="continueToMenu()" disabled>Continuar</button>
 </div>
 
-<div class="products-container">
-<div class="products-grid" id="productsGrid"></div>
+<div id="menuScreen" style="display: none;">
+  <div class="category-tabs">
+    <div class="category-tab active" onclick="filterCategory('all', this)">Todos</div>
+    <div class="category-tab" onclick="filterCategory('Tradicional', this)">Tradicional</div>
+    <div class="category-tab" onclick="filterCategory('Especial', this)">Especiais</div>
+    <div class="category-tab" onclick="filterCategory('Doce', this)">Doces</div>
+  </div>
+
+  <div class="products-container">
+    <div class="products-grid" id="productsGrid"></div>
+  </div>
 </div>
 
 <div class="floating-cart" id="floatingCart">
-<button class="cart-btn" onclick="openCartModal()">
-<span>🛒 Ver Carrinho</span>
-<span id="cartTotal">R$ 0,00</span>
-<div class="cart-count" id="cartCount">0</div>
-</button>
+  <button class="cart-btn" onclick="openCartModal()">
+    <span>🛒 Ver Carrinho</span>
+    <span id="cartTotal">R$ 0,00</span>
+    <div class="cart-count" id="cartCount">0</div>
+  </button>
 </div>
 
 <div class="modal-overlay" id="optionsModal"></div>
@@ -480,351 +588,385 @@ margin-top: 20px;
 
 <script>
 const STORES = [
-{ id: 1, name: "Pizzaria Bella Napoli - Centro", address: "Rua das Pizzas, 123", whatsapp: "5516991421704" }
+  { id: 1, name: "Pizzaria Bella Napoli - Centro", address: "Rua das Pizzas, 123", whatsapp: "5516991421704" }
 ];
 
 const PAYMENT_METHODS = ["Dinheiro", "Cartão de Crédito", "Cartão de Débito", "Pix"];
 
 const PRODUCTS = [
-{
-id: 1,
-name: "Margherita",
-description: "Molho de tomate, mussarela, manjericão fresco e azeite de oliva.",
-price: 32.00,
-image: "https://placehold.co/600x400/FF6B35/FFFFFF?text=Margherita",
-category: "Tradicional"
-},
-{
-id: 2,
-name: "Pepperoni",
-description: "Molho de tomate, mussarela e pepperoni fatiado.",
-price: 38.00,
-image: "https://placehold.co/600x400/FF6B35/FFFFFF?text=Pepperoni",
-category: "Tradicional"
-},
-{
-id: 3,
-name: "Quatro Queijos",
-description: "Mussarela, gorgonzola, parmesão e provolone.",
-price: 42.00,
-image: "https://placehold.co/600x400/FF6B35/FFFFFF?text=4+Queijos",
-category: "Especial"
-},
-{
-id: 4,
-name: "Frango com Catupiry",
-description: "Molho de tomate, frango desfiado, catupiry e mussarela.",
-price: 40.00,
-image: "https://placehold.co/600x400/FF6B35/FFFFFF?text=Frango+Catupiry",
-category: "Especial"
-},
-{
-id: 5,
-name: "Calabresa",
-description: "Molho de tomate, mussarela e calabresa fatiada.",
-price: 36.00,
-image: "https://placehold.co/600x400/FF6B35/FFFFFF?text=Calabresa",
-category: "Tradicional"
-},
-{
-id: 6,
-name: "Portuguesa",
-description: "Molho de tomate, mussarela, presunto, ovos, cebola, pimentão e azeitonas.",
-price: 44.00,
-image: "https://placehold.co/600x400/FF6B35/FFFFFF?text=Portuguesa",
-category: "Especial"
-},
-{
-id: 7,
-name: "Chocolate com Morango",
-description: "Chocolate ao leite e morangos frescos.",
-price: 38.00,
-image: "https://placehold.co/600x400/FF6B35/FFFFFF?text=Chocolate+Morango",
-category: "Doce"
-},
-{
-id: 8,
-name: "Banana com Canela",
-description: "Banana fatiada, canela e leite condensado.",
-price: 36.00,
-image: "https://placehold.co/600x400/FF6B35/FFFFFF?text=Banana+Canela",
-category: "Doce"
-}
+  {
+    id: 1,
+    name: "Margherita",
+    description: "Molho de tomate, mussarela, manjericão fresco e azeite de oliva.",
+    image: "https://placehold.co/600x400/FF6B35/FFFFFF?text=Margherita",
+    category: "Tradicional"
+  },
+  {
+    id: 2,
+    name: "Pepperoni",
+    description: "Molho de tomate, mussarela e pepperoni fatiado.",
+    image: "https://placehold.co/600x400/FF6B35/FFFFFF?text=Pepperoni",
+    category: "Tradicional"
+  },
+  {
+    id: 3,
+    name: "Quatro Queijos",
+    description: "Mussarela, gorgonzola, parmesão e provolone.",
+    image: "https://placehold.co/600x400/FF6B35/FFFFFF?text=4+Queijos",
+    category: "Especial"
+  },
+  {
+    id: 4,
+    name: "Frango com Catupiry",
+    description: "Molho de tomate, frango desfiado, catupiry e mussarela.",
+    image: "https://placehold.co/600x400/FF6B35/FFFFFF?text=Frango+Catupiry",
+    category: "Especial"
+  },
+  {
+    id: 5,
+    name: "Calabresa",
+    description: "Molho de tomate, mussarela e calabresa fatiada.",
+    image: "https://placehold.co/600x400/FF6B35/FFFFFF?text=Calabresa",
+    category: "Tradicional"
+  },
+  {
+    id: 6,
+    name: "Portuguesa",
+    description: "Molho de tomate, mussarela, presunto, ovos, cebola, pimentão e azeitonas.",
+    image: "https://placehold.co/600x400/FF6B35/FFFFFF?text=Portuguesa",
+    category: "Especial"
+  },
+  {
+    id: 7,
+    name: "Chocolate com Morango",
+    description: "Chocolate ao leite e morangos frescos.",
+    image: "https://placehold.co/600x400/FF6B35/FFFFFF?text=Chocolate+Morango",
+    category: "Doce"
+  },
+  {
+    id: 8,
+    name: "Banana com Canela",
+    description: "Banana fatiada, canela e leite condensado.",
+    image: "https://placehold.co/600x400/FF6B35/FFFFFF?text=Banana+Canela",
+    category: "Doce"
+  }
 ];
 
 let cart = [];
 let currentCategory = 'all';
+let selectedPizzaType = null;
+let selectedPizzaPrice = 0;
 
 document.addEventListener('DOMContentLoaded', () => {
-renderProducts();
-updateCartDisplay();
+  setupTypeSelection();
 });
 
+function setupTypeSelection() {
+  const options = document.querySelectorAll('.type-option');
+  const continueBtn = document.querySelector('.continue-btn');
+  
+  options.forEach(option => {
+    option.addEventListener('click', () => {
+      options.forEach(opt => opt.classList.remove('selected'));
+      option.classList.add('selected');
+      selectedPizzaType = option.dataset.type;
+      selectedPizzaPrice = parseFloat(option.dataset.price);
+      continueBtn.disabled = false;
+    });
+  });
+}
+
+function continueToMenu() {
+  if (!selectedPizzaType) return;
+  document.getElementById('typeSelectionScreen').style.display = 'none';
+  document.getElementById('menuScreen').style.display = 'block';
+  renderProducts();
+  updateCartDisplay();
+}
+
 function renderProducts() {
-const grid = document.getElementById('productsGrid');
-grid.innerHTML = '';
-const filtered = PRODUCTS.filter(p => currentCategory === 'all' || p.category === currentCategory);
-filtered.forEach(product => {
-const card = document.createElement('div');
-card.className = 'product-card';
-card.innerHTML = `
-<div class="product-image">
-<img src="${product.image}" alt="${product.name}" loading="lazy">
-</div>
-<div class="product-info">
-<div class="product-name">${product.name}</div>
-<div class="product-description">${product.description}</div>
-<div class="product-footer">
-<span class="product-price">R$ ${product.price.toFixed(2).replace('.', ',')}</span>
-<button class="view-options-btn" onclick="openOptionsModal(${product.id})">Eu Quero!</button>
-</div>
-</div>
-`;
-grid.appendChild(card);
-});
+  const grid = document.getElementById('productsGrid');
+  grid.innerHTML = '';
+  const filtered = PRODUCTS.filter(p => currentCategory === 'all' || p.category === currentCategory);
+  filtered.forEach(product => {
+    const card = document.createElement('div');
+    card.className = 'product-card';
+    card.innerHTML = `
+      <div class="product-image">
+        <img src="${product.image}" alt="${product.name}" loading="lazy">
+      </div>
+      <div class="product-info">
+        <div class="product-name">${product.name}</div>
+        <div class="product-description">${product.description}</div>
+        <div class="product-footer">
+          <span class="product-price">R$ ${selectedPizzaPrice.toFixed(2).replace('.', ',')}</span>
+          <button class="view-options-btn" onclick="openOptionsModal(${product.id})">Eu Quero!</button>
+        </div>
+      </div>
+    `;
+    grid.appendChild(card);
+  });
 }
 
 function filterCategory(category, element) {
-currentCategory = category;
-document.querySelectorAll('.category-tab').forEach(tab => tab.classList.remove('active'));
-element.classList.add('active');
-renderProducts();
+  currentCategory = category;
+  document.querySelectorAll('.category-tab').forEach(tab => tab.classList.remove('active'));
+  element.classList.add('active');
+  renderProducts();
 }
 
 function openOptionsModal(productId) {
-const product = PRODUCTS.find(p => p.id === productId);
-if (!product) return;
+  const product = PRODUCTS.find(p => p.id === productId);
+  if (!product) return;
 
-const modal = document.getElementById('optionsModal');
-modal.innerHTML = `
-<div class="modal-content">
-<div class="modal-header">
-<h3 class="modal-title">${product.name}</h3>
-<button class="close-btn" onclick="closeOptionsModal()">&times;</button>
-</div>
-<div class="modal-body">
-<img src="${product.image}" alt="${product.name}" class="options-product-image">
-<div class="options-product-details">
-<p class="product-description">${product.description}</p>
-</div>
-<div class="option-group">
-<div class="option-group-title">Tipo de Porção</div>
-<div class="option-item">
-<div class="option-item-main">
-<label for="option-inteira">
-<input type="checkbox" id="option-inteira" onchange="handlePortionChange('inteira')">
-Selecionar como inteira
-</label>
-</div>
-</div>
-<div class="option-item">
-<div class="option-item-main">
-<label for="option-metade">
-<input type="checkbox" id="option-metade" onchange="handlePortionChange('metade')">
-Selecionar como metade
-</label>
-</div>
-</div>
-</div>
-</div>
-<div class="modal-footer">
-<div class="quantity-controls">
-<button class="qty-btn" onclick="updateOptionQuantity(-1, ${productId})">-</button>
-<span class="quantity" id="options-quantity">1</span>
-<button class="qty-btn" onclick="updateOptionQuantity(1, ${productId})">+</button>
-</div>
-<button class="add-to-cart-btn" onclick="addItemToCartFromModal(${productId})">
-Adicionar
-<span class="price" id="options-total-price">R$ ${product.price.toFixed(2).replace('.', ',')}</span>
-</button>
-</div>
-</div>
-`;
+  const modal = document.getElementById('optionsModal');
+  modal.innerHTML = `
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title">${product.name}</h3>
+        <button class="close-btn" onclick="closeOptionsModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <img src="${product.image}" alt="${product.name}" class="options-product-image">
+        <div class="options-product-details">
+          <p class="product-description">${product.description}</p>
+        </div>
+        <div class="option-group">
+          <div class="option-group-title">Tipo de Porção</div>
+          <div class="option-item">
+            <div class="option-item-main">
+              <label for="option-inteira">
+                <input type="checkbox" id="option-inteira" onchange="handlePortionChange('inteira')">
+                Selecionar como inteira
+              </label>
+            </div>
+          </div>
+          <div class="option-item">
+            <div class="option-item-main">
+              <label for="option-metade">
+                <input type="checkbox" id="option-metade" onchange="handlePortionChange('metade')">
+                Selecionar como metade
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <div class="quantity-controls">
+          <button class="qty-btn" onclick="updateOptionQuantity(-1, ${productId})">-</button>
+          <span class="quantity" id="options-quantity">1</span>
+          <button class="qty-btn" onclick="updateOptionQuantity(1, ${productId})">+</button>
+        </div>
+        <button class="add-to-cart-btn" onclick="addItemToCartFromModal(${productId})">
+          Adicionar
+          <span class="price" id="options-total-price">R$ ${selectedPizzaPrice.toFixed(2).replace('.', ',')}</span>
+        </button>
+      </div>
+    </div>
+  `;
 
-document.body.classList.add('modal-open');
-modal.classList.add('active');
-window.currentProductId = productId;
-window.selectedPortion = 'inteira';
-document.getElementById('option-inteira').checked = true;
-document.getElementById('options-total-price').textContent = `R$ ${product.price.toFixed(2).replace('.', ',')}`;
+  document.body.classList.add('modal-open');
+  modal.classList.add('active');
+  window.currentProductId = productId;
+  window.selectedPortion = 'inteira';
+  document.getElementById('option-inteira').checked = true;
+  document.getElementById('options-total-price').textContent = `R$ ${selectedPizzaPrice.toFixed(2).replace('.', ',')}`;
 }
 
 function handlePortionChange(selected) {
-window.selectedPortion = selected;
-const inteira = document.getElementById('option-inteira');
-const metade = document.getElementById('option-metade');
+  window.selectedPortion = selected;
+  const inteira = document.getElementById('option-inteira');
+  const metade = document.getElementById('option-metade');
 
-if (selected === 'inteira') {
-inteira.checked = true;
-metade.checked = false;
-} else {
-metade.checked = true;
-inteira.checked = false;
-}
+  if (selected === 'inteira') {
+    inteira.checked = true;
+    metade.checked = false;
+  } else {
+    metade.checked = true;
+    inteira.checked = false;
+  }
 }
 
 function closeOptionsModal() {
-document.getElementById('optionsModal').classList.remove('active');
-if (!document.getElementById('cartModal').classList.contains('active')) {
-document.body.classList.remove('modal-open');
-}
+  document.getElementById('optionsModal').classList.remove('active');
+  if (!document.getElementById('cartModal').classList.contains('active')) {
+    document.body.classList.remove('modal-open');
+  }
 }
 
 function updateOptionQuantity(change, productId) {
-const qtyEl = document.getElementById('options-quantity');
-let quantity = parseInt(qtyEl.textContent) + change;
-if (quantity < 1) quantity = 1;
-qtyEl.textContent = quantity;
+  const qtyEl = document.getElementById('options-quantity');
+  let quantity = parseInt(qtyEl.textContent) + change;
+  if (quantity < 1) quantity = 1;
+  qtyEl.textContent = quantity;
 
-const product = PRODUCTS.find(p => p.id === productId);
-const totalPrice = product.price * quantity;
-document.getElementById('options-total-price').textContent = `R$ ${totalPrice.toFixed(2).replace('.', ',')}`;
+  const totalPrice = selectedPizzaPrice * quantity;
+  document.getElementById('options-total-price').textContent = `R$ ${totalPrice.toFixed(2).replace('.', ',')}`;
 }
 
 function addItemToCartFromModal(productId) {
-const product = PRODUCTS.find(p => p.id === productId);
-const quantity = parseInt(document.getElementById('options-quantity').textContent);
-const portion = window.selectedPortion;
+  const product = PRODUCTS.find(p => p.id === productId);
+  const quantity = parseInt(document.getElementById('options-quantity').textContent);
+  const portion = window.selectedPortion;
 
-cart.push({
-id: product.id,
-name: product.name,
-quantity,
-unitPrice: product.price,
-portion,
-image: product.image,
-cartItemId: Date.now().toString()
-});
+  cart.push({
+    id: product.id,
+    name: product.name,
+    quantity,
+    unitPrice: selectedPizzaPrice,
+    pizzaType: selectedPizzaType,
+    pizzaTypePrice: selectedPizzaPrice,
+    portion,
+    image: product.image,
+    cartItemId: Date.now().toString()
+  });
 
-updateCartDisplay();
-closeOptionsModal();
+  updateCartDisplay();
+  closeOptionsModal();
 }
 
 function calculateTotal() {
-return cart.reduce((sum, item) => sum + (item.unitPrice * item.quantity), 0);
+  return cart.reduce((sum, item) => sum + (item.unitPrice * item.quantity), 0);
 }
 
 function updateCartDisplay() {
-const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
-const total = calculateTotal();
-document.getElementById('cartCount').textContent = totalItems;
-document.getElementById('cartTotal').textContent = `R$ ${total.toFixed(2).replace('.', ',')}`;
-document.getElementById('floatingCart').classList.toggle('visible', totalItems > 0);
-const totalPriceEl = document.getElementById('total-price-text');
-if (totalPriceEl) totalPriceEl.textContent = `R$ ${total.toFixed(2).replace('.', ',')}`;
+  const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+  const total = calculateTotal();
+  document.getElementById('cartCount').textContent = totalItems;
+  document.getElementById('cartTotal').textContent = `R$ ${total.toFixed(2).replace('.', ',')}`;
+  document.getElementById('floatingCart').classList.toggle('visible', totalItems > 0);
+  const totalPriceEl = document.getElementById('total-price-text');
+  if (totalPriceEl) totalPriceEl.textContent = `R$ ${total.toFixed(2).replace('.', ',')}`;
 }
 
 function openCartModal() {
-const modal = document.getElementById('cartModal');
-let contentHTML = `<div class="modal-content">
-<div class="modal-header">
-<h3 class="modal-title">🛒 Finalizar Pedido</h3>
-<button class="close-btn" onclick="closeCartModal()">&times;</button>
-</div>
-<div class="modal-body">`;
+  const modal = document.getElementById('cartModal');
+  let contentHTML = `<div class="modal-content">
+    <div class="modal-header">
+      <h3 class="modal-title">🛒 Finalizar Pedido</h3>
+      <button class="close-btn" onclick="closeCartModal()">&times;</button>
+    </div>
+    <div class="modal-body">`;
 
-if (cart.length === 0) {
-contentHTML += `<div class="empty-cart"><h3>Seu carrinho está vazio</h3></div>`;
-} else {
-let itemsHTML = '<div class="cart-section">';
-cart.forEach(item => {
-const portionText = item.portion === 'inteira' ? 'Inteira' : 'Metade';
-itemsHTML += `
-<div class="cart-item">
-<div class="cart-item-image">
-<img src="${item.image}" alt="${item.name}">
-</div>
-<div class="cart-item-content">
-<div>
-<div class="cart-item-name">${item.quantity}x ${item.name} (${portionText})</div>
-</div>
-<div class="cart-item-footer">
-<span class="cart-item-price">R$ ${(item.unitPrice * item.quantity).toFixed(2).replace('.', ',')}</span>
-<div class="quantity-controls">
-<button class="qty-btn" onclick="updateCartItemQuantity('${item.cartItemId}', -1)">-</button>
-<span class="quantity">${item.quantity}</span>
-<button class="qty-btn" onclick="updateCartItemQuantity('${item.cartItemId}', 1)">+</button>
-</div>
-</div>
-</div>
-</div>`;
-});
-itemsHTML += '</div>';
-contentHTML += itemsHTML;
+  if (cart.length === 0) {
+    contentHTML += `<div class="empty-cart"><h3>Seu carrinho está vazio</h3></div>`;
+  } else {
+    let itemsHTML = '<div class="cart-section">';
+    cart.forEach(item => {
+      const portionText = item.portion === 'inteira' ? 'Inteira' : 'Metade';
+      const typeText = getTypeText(item.pizzaType);
+      itemsHTML += `
+        <div class="cart-item">
+          <div class="cart-item-image">
+            <img src="${item.image}" alt="${item.name}">
+          </div>
+          <div class="cart-item-content">
+            <div>
+              <div class="cart-item-name">${item.quantity}x ${item.name} (${portionText})</div>
+              <ul class="cart-item-details">
+                <li>${typeText} - R$ ${item.pizzaTypePrice.toFixed(2).replace('.', ',')}</li>
+              </ul>
+            </div>
+            <div class="cart-item-footer">
+              <span class="cart-item-price">R$ ${(item.unitPrice * item.quantity).toFixed(2).replace('.', ',')}</span>
+              <div class="quantity-controls">
+                <button class="qty-btn" onclick="updateCartItemQuantity('${item.cartItemId}', -1)">-</button>
+                <span class="quantity">${item.quantity}</span>
+                <button class="qty-btn" onclick="updateCartItemQuantity('${item.cartItemId}', 1)">+</button>
+              </div>
+            </div>
+          </div>
+        </div>`;
+    });
+    itemsHTML += '</div>';
+    contentHTML += itemsHTML;
 
-const subtotal = calculateTotal();
-const total = subtotal;
+    const subtotal = calculateTotal();
+    const total = subtotal;
 
-contentHTML += `<div class="cart-section">
-<div class="form-group">
-<label class="form-label">Estabelecimento</label>
-<select class="form-select" id="storeSelect">
-${STORES.map(s => `<option value="${s.id}">${s.name}</option>`).join('')}
-</select>
-</div>
-<div class="form-group">
-<label class="form-label">Forma de Pagamento</label>
-<select class="form-select" id="paymentMethod">
-${PAYMENT_METHODS.map(p => `<option value="${p}">${p}</option>`).join('')}
-</select>
-</div>
-<div class="form-group">
-<label class="form-label">Observações</label>
-<textarea class="form-input" id="customerNotes" rows="2" placeholder="Alguma observação especial sobre o pedido?"></textarea>
-</div>
-</div>`;
+    contentHTML += `<div class="cart-section">
+      <div class="form-group">
+        <label class="form-label">Estabelecimento</label>
+        <select class="form-select" id="storeSelect">
+          ${STORES.map(s => `<option value="${s.id}">${s.name}</option>`).join('')}
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Forma de Pagamento</label>
+        <select class="form-select" id="paymentMethod">
+          ${PAYMENT_METHODS.map(p => `<option value="${p}">${p}</option>`).join('')}
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Observações</label>
+        <textarea class="form-input" id="customerNotes" rows="2" placeholder="Alguma observação especial sobre o pedido?"></textarea>
+      </div>
+    </div>`;
 
-contentHTML += `<div class="cart-section">
-<div class="total-row final">
-<span>Total:</span>
-<span id="total-price-text">R$ ${total.toFixed(2).replace('.', ',')}</span>
-</div>
-<button class="whatsapp-btn" onclick="sendToWhatsApp()">Gerar Pedido</button>
-</div>`;
-}
-contentHTML += `</div></div>`;
-modal.innerHTML = contentHTML;
-document.body.classList.add('modal-open');
-modal.classList.add('active');
+    contentHTML += `<div class="cart-section">
+      <div class="total-row final">
+        <span>Total:</span>
+        <span id="total-price-text">R$ ${total.toFixed(2).replace('.', ',')}</span>
+      </div>
+      <button class="whatsapp-btn" onclick="sendToWhatsApp()">Gerar Pedido</button>
+    </div>`;
+  }
+  contentHTML += `</div></div>`;
+  modal.innerHTML = contentHTML;
+  document.body.classList.add('modal-open');
+  modal.classList.add('active');
 }
 
 function closeCartModal() {
-document.getElementById('cartModal').classList.remove('active');
-if (!document.getElementById('optionsModal').classList.contains('active')) {
-document.body.classList.remove('modal-open');
-}
+  document.getElementById('cartModal').classList.remove('active');
+  if (!document.getElementById('optionsModal').classList.contains('active')) {
+    document.body.classList.remove('modal-open');
+  }
 }
 
 function updateCartItemQuantity(cartItemId, change) {
-const itemIndex = cart.findIndex(item => item.cartItemId === cartItemId);
-if (itemIndex > -1) {
-cart[itemIndex].quantity += change;
-if (cart[itemIndex].quantity <= 0) cart.splice(itemIndex, 1);
+  const itemIndex = cart.findIndex(item => item.cartItemId === cartItemId);
+  if (itemIndex > -1) {
+    cart[itemIndex].quantity += change;
+    if (cart[itemIndex].quantity <= 0) cart.splice(itemIndex, 1);
+  }
+  openCartModal();
+  updateCartDisplay();
 }
-openCartModal();
-updateCartDisplay();
+
+function getTypeText(type) {
+  const types = {
+    'pre-assada-sem-borda': 'Pré assada sem borda',
+    'pre-assada-com-borda': 'Pré assada com borda',
+    'assada-sem-borda': 'Assada sem borda',
+    'assada-com-borda': 'Assada com borda',
+    'brotinho': 'Brotinho'
+  };
+  return types[type] || type;
 }
 
 function sendToWhatsApp() {
-const selectedStore = STORES[0];
-const paymentMethod = document.getElementById('paymentMethod').value;
-const notes = document.getElementById('customerNotes').value.trim();
+  const selectedStore = STORES[0];
+  const paymentMethod = document.getElementById('paymentMethod').value;
+  const notes = document.getElementById('customerNotes').value.trim();
 
-let message = `🏪 *NOVO PEDIDO - ${selectedStore.name}*\n\n`;
-message += `📋 *ITENS DO PEDIDO:*\n`;
+  let message = `🏪 *NOVO PEDIDO - ${selectedStore.name}*\n\n`;
+  message += `📋 *ITENS DO PEDIDO:*\n`;
 
-cart.forEach(item => {
-const portionText = item.portion === 'inteira' ? 'Inteira' : 'Metade';
-message += `--------------------\n*${item.quantity}x ${item.name} (${portionText})* (R$ ${item.unitPrice.toFixed(2).replace('.', ',')} cada)\n`;
-});
+  cart.forEach(item => {
+    const portionText = item.portion === 'inteira' ? 'Inteira' : 'Metade';
+    const typeText = getTypeText(item.pizzaType);
+    message += `--------------------\n*${item.quantity}x ${item.name} (${portionText})*\n`;
+    message += `Tipo: ${typeText} - R$ ${item.pizzaTypePrice.toFixed(2).replace('.', ',')} cada\n`;
+  });
 
-const total = calculateTotal();
-message += `--------------------\n\n`;
-message += `*TOTAL:* R$ ${total.toFixed(2).replace('.', ',')}\n\n`;
-message += `*Forma de Pagamento:* ${paymentMethod}\n`;
-if (notes) message += `*Observações:* ${notes}`;
+  const total = calculateTotal();
+  message += `--------------------\n\n`;
+  message += `*TOTAL:* R$ ${total.toFixed(2).replace('.', ',')}\n\n`;
+  message += `*Forma de Pagamento:* ${paymentMethod}\n`;
+  if (notes) message += `*Observações:* ${notes}`;
 
-window.open(`https://wa.me/${selectedStore.whatsapp}?text=${encodeURIComponent(message)}`, '_blank');
+  window.open(`https://wa.me/${selectedStore.whatsapp}?text=${encodeURIComponent(message)}`, '_blank');
 }
 </script>
 </body>
