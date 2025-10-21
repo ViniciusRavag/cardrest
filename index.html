@@ -532,6 +532,12 @@ margin-top: 20px;
   cursor: pointer;
   margin-top: 20px;
 }
+.error-message {
+  color: var(--danger-color);
+  font-size: 0.85rem;
+  margin-top: 5px;
+  display: none;
+}
 </style>
 </head>
 <body>
@@ -735,21 +741,29 @@ function openOptionsModal(productId) {
           <div class="option-group-title">Tipo de Porção</div>
           <div class="option-item">
             <div class="option-item-main">
-              <label for="option-inteira">
-                <input type="checkbox" id="option-inteira" onchange="handlePortionChange('inteira')">
+              <label for="option-inteira-${productId}">
+                <input type="radio" id="option-inteira-${productId}" name="portion-${productId}" value="inteira" onchange="handlePortionSelection(${productId}, 'inteira')">
                 Selecionar como inteira
               </label>
             </div>
           </div>
           <div class="option-item">
             <div class="option-item-main">
-              <label for="option-metade">
-                <input type="checkbox" id="option-metade" onchange="handlePortionChange('metade')">
+              <label for="option-metade-${productId}">
+                <input type="radio" id="option-metade-${productId}" name="portion-${productId}" value="metade" onchange="handlePortionSelection(${productId}, 'metade')">
                 Selecionar como metade
               </label>
             </div>
           </div>
         </div>
+        <div id="half-selection-${productId}" style="display: none;">
+          <div class="option-group">
+            <div class="option-group-title">Escolha o segundo sabor (metade)</div>
+            <div class="products-grid" style="grid-template-columns: 1fr; gap: 10px; margin-top: 10px;" id="half-products-${productId}">
+            </div>
+          </div>
+        </div>
+        <div id="portion-error-${productId}" class="error-message"></div>
       </div>
       <div class="modal-footer">
         <div class="quantity-controls">
@@ -769,22 +783,53 @@ function openOptionsModal(productId) {
   modal.classList.add('active');
   window.currentProductId = productId;
   window.selectedPortion = 'inteira';
-  document.getElementById('option-inteira').checked = true;
+  window.selectedHalfFlavor = null;
+  document.getElementById(`option-inteira-${productId}`).checked = true;
   document.getElementById('options-total-price').textContent = `R$ ${selectedPizzaPrice.toFixed(2).replace('.', ',')}`;
 }
 
-function handlePortionChange(selected) {
-  window.selectedPortion = selected;
-  const inteira = document.getElementById('option-inteira');
-  const metade = document.getElementById('option-metade');
-
-  if (selected === 'inteira') {
-    inteira.checked = true;
-    metade.checked = false;
+function handlePortionSelection(productId, portion) {
+  window.selectedPortion = portion;
+  const halfSelection = document.getElementById(`half-selection-${productId}`);
+  const errorDiv = document.getElementById(`portion-error-${productId}`);
+  errorDiv.style.display = 'none';
+  
+  if (portion === 'metade') {
+    halfSelection.style.display = 'block';
+    loadHalfProducts(productId);
   } else {
-    metade.checked = true;
-    inteira.checked = false;
+    halfSelection.style.display = 'none';
+    window.selectedHalfFlavor = null;
   }
+}
+
+function loadHalfProducts(productId) {
+  const container = document.getElementById(`half-products-${productId}`);
+  container.innerHTML = '';
+  
+  PRODUCTS.filter(p => p.id !== productId).forEach(product => {
+    const card = document.createElement('div');
+    card.className = 'product-card';
+    card.style.cursor = 'pointer';
+    card.onclick = () => selectHalfFlavor(productId, product);
+    card.innerHTML = `
+      <div class="product-image">
+        <img src="${product.image}" alt="${product.name}" loading="lazy">
+      </div>
+      <div class="product-info">
+        <div class="product-name">${product.name}</div>
+        <div class="product-description">${product.description.substring(0, 60)}...</div>
+      </div>
+    `;
+    container.appendChild(card);
+  });
+}
+
+function selectHalfFlavor(productId, product) {
+  window.selectedHalfFlavor = product;
+  const cards = document.querySelectorAll(`#half-products-${productId} .product-card`);
+  cards.forEach(card => card.style.border = 'none');
+  event.currentTarget.style.border = '2px solid var(--primary-color)';
 }
 
 function closeOptionsModal() {
@@ -805,21 +850,50 @@ function updateOptionQuantity(change, productId) {
 }
 
 function addItemToCartFromModal(productId) {
-  const product = PRODUCTS.find(p => p.id === productId);
-  const quantity = parseInt(document.getElementById('options-quantity').textContent);
-  const portion = window.selectedPortion;
+  const errorDiv = document.getElementById(`portion-error-${productId}`);
+  errorDiv.style.display = 'none';
+  
+  if (window.selectedPortion === 'metade' && !window.selectedHalfFlavor) {
+    errorDiv.textContent = 'Por favor, selecione um segundo sabor para a metade.';
+    errorDiv.style.display = 'block';
+    return;
+  }
 
-  cart.push({
-    id: product.id,
-    name: product.name,
-    quantity,
-    unitPrice: selectedPizzaPrice,
-    pizzaType: selectedPizzaType,
-    pizzaTypePrice: selectedPizzaPrice,
-    portion,
-    image: product.image,
-    cartItemId: Date.now().toString()
-  });
+  const mainProduct = PRODUCTS.find(p => p.id === productId);
+  const quantity = parseInt(document.getElementById('options-quantity').textContent);
+
+  if (window.selectedPortion === 'inteira') {
+    cart.push({
+      id: mainProduct.id,
+      name: mainProduct.name,
+      quantity,
+      unitPrice: selectedPizzaPrice,
+      pizzaType: selectedPizzaType,
+      pizzaTypePrice: selectedPizzaPrice,
+      portion: 'inteira',
+      image: mainProduct.image,
+      cartItemId: Date.now().toString()
+    });
+  } else {
+    // Metade com dois sabores
+    const half1 = mainProduct.name;
+    const half2 = window.selectedHalfFlavor.name;
+    const combinedName = `${half1} + ${half2}`;
+    
+    cart.push({
+      id: `${mainProduct.id}-${window.selectedHalfFlavor.id}`,
+      name: combinedName,
+      quantity,
+      unitPrice: selectedPizzaPrice,
+      pizzaType: selectedPizzaType,
+      pizzaTypePrice: selectedPizzaPrice,
+      portion: 'metade',
+      half1: half1,
+      half2: half2,
+      image: mainProduct.image,
+      cartItemId: Date.now().toString()
+    });
+  }
 
   updateCartDisplay();
   closeOptionsModal();
@@ -853,8 +927,21 @@ function openCartModal() {
   } else {
     let itemsHTML = '<div class="cart-section">';
     cart.forEach(item => {
-      const portionText = item.portion === 'inteira' ? 'Inteira' : 'Metade';
       const typeText = getTypeText(item.pizzaType);
+      let itemDetails = '';
+      
+      if (item.portion === 'metade') {
+        itemDetails = `<ul class="cart-item-details">
+          <li>Metade: ${item.half1}</li>
+          <li>Metade: ${item.half2}</li>
+          <li>${typeText} - R$ ${item.pizzaTypePrice.toFixed(2).replace('.', ',')}</li>
+        </ul>`;
+      } else {
+        itemDetails = `<ul class="cart-item-details">
+          <li>${typeText} - R$ ${item.pizzaTypePrice.toFixed(2).replace('.', ',')}</li>
+        </ul>`;
+      }
+      
       itemsHTML += `
         <div class="cart-item">
           <div class="cart-item-image">
@@ -862,10 +949,8 @@ function openCartModal() {
           </div>
           <div class="cart-item-content">
             <div>
-              <div class="cart-item-name">${item.quantity}x ${item.name} (${portionText})</div>
-              <ul class="cart-item-details">
-                <li>${typeText} - R$ ${item.pizzaTypePrice.toFixed(2).replace('.', ',')}</li>
-              </ul>
+              <div class="cart-item-name">${item.quantity}x ${item.name}</div>
+              ${itemDetails}
             </div>
             <div class="cart-item-footer">
               <span class="cart-item-price">R$ ${(item.unitPrice * item.quantity).toFixed(2).replace('.', ',')}</span>
@@ -954,10 +1039,12 @@ function sendToWhatsApp() {
   message += `📋 *ITENS DO PEDIDO:*\n`;
 
   cart.forEach(item => {
-    const portionText = item.portion === 'inteira' ? 'Inteira' : 'Metade';
     const typeText = getTypeText(item.pizzaType);
-    message += `--------------------\n*${item.quantity}x ${item.name} (${portionText})*\n`;
+    message += `--------------------\n*${item.quantity}x ${item.name}*\n`;
     message += `Tipo: ${typeText} - R$ ${item.pizzaTypePrice.toFixed(2).replace('.', ',')} cada\n`;
+    if (item.portion === 'metade') {
+      message += `Sabores: ${item.half1} + ${item.half2}\n`;
+    }
   });
 
   const total = calculateTotal();
