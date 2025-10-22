@@ -34,6 +34,11 @@ padding-bottom: 100px;
 body.modal-open{
 overflow: hidden;
 }
+.banner-image{
+width: 100%;
+height: 180px;
+object-fit: cover;
+}
 .category-tabs{
 display: flex;
 overflow-x: auto;
@@ -252,7 +257,7 @@ font-size: 0.9rem;
 font-weight: 500;
 flex-grow: 1;
 }
-.option-item input[type="checkbox"]{
+.option-item input[type="radio"]{
 width: 20px;
 height: 20px;
 accent-color: var(--primary-color);
@@ -437,6 +442,11 @@ background:#fdfdfd;
 outline: none;
 border-color: var(--primary-color);
 }
+.form-select:disabled{
+background: #f5f5f5;
+color: #999;
+cursor: not-allowed;
+}
 .whatsapp-btn{
 width: 100%;
 padding: 15px;
@@ -569,6 +579,7 @@ margin-top: 20px;
 </div>
 
 <div id="menuScreen" style="display: none;">
+  <img src="https://placehold.co/800x180/d32f2f/FFFFFF?text=Pizzaria+Bella+Napoli+-+As+Melhores+Pizzas+da+Cidade!" alt="Banner Pizzaria" class="banner-image">
   <div class="category-tabs">
     <div class="category-tab active" onclick="filterCategory('all', this)">Todos</div>
     <div class="category-tab" onclick="filterCategory('Tradicional', this)">Tradicional</div>
@@ -598,6 +609,7 @@ const STORES = [
 ];
 
 const PAYMENT_METHODS = ["Dinheiro", "Cartão de Crédito", "Cartão de Débito", "Pix"];
+const CRUST_OPTIONS = ["Catupiry", "Cheddar"];
 
 const PRODUCTS = [
   {
@@ -742,7 +754,7 @@ function openOptionsModal(productId) {
           <div class="option-item">
             <div class="option-item-main">
               <label for="option-inteira-${productId}">
-                <input type="radio" id="option-inteira-${productId}" name="portion-${productId}" value="inteira" onchange="handlePortionSelection(${productId}, 'inteira')">
+                <input type="radio" id="option-inteira-${productId}" name="portion-${productId}" value="inteira" onchange="handlePortionSelection(${productId}, 'inteira')" checked>
                 Selecionar como inteira
               </label>
             </div>
@@ -784,7 +796,6 @@ function openOptionsModal(productId) {
   window.currentProductId = productId;
   window.selectedPortion = 'inteira';
   window.selectedHalfFlavor = null;
-  document.getElementById(`option-inteira-${productId}`).checked = true;
   document.getElementById('options-total-price').textContent = `R$ ${selectedPizzaPrice.toFixed(2).replace('.', ',')}`;
 }
 
@@ -968,12 +979,19 @@ function openCartModal() {
 
     const subtotal = calculateTotal();
     const total = subtotal;
+    const hasBorda = selectedPizzaType.includes('com-borda');
 
     contentHTML += `<div class="cart-section">
       <div class="form-group">
         <label class="form-label">Estabelecimento</label>
         <select class="form-select" id="storeSelect">
           ${STORES.map(s => `<option value="${s.id}">${s.name}</option>`).join('')}
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Borda</label>
+        <select class="form-select" id="crustSelect" ${!hasBorda ? 'disabled' : ''}>
+          ${CRUST_OPTIONS.map(crust => `<option value="${crust}">${crust}</option>`).join('')}
         </select>
       </div>
       <div class="form-group">
@@ -1033,7 +1051,9 @@ function getTypeText(type) {
 function sendToWhatsApp() {
   const selectedStore = STORES[0];
   const paymentMethod = document.getElementById('paymentMethod').value;
+  const crust = document.getElementById('crustSelect').value;
   const notes = document.getElementById('customerNotes').value.trim();
+  const hasBorda = selectedPizzaType.includes('com-borda');
 
   let message = `🏪 *NOVO PEDIDO - ${selectedStore.name}*\n\n`;
   message += `📋 *ITENS DO PEDIDO:*\n`;
@@ -1046,6 +1066,10 @@ function sendToWhatsApp() {
       message += `Sabores: ${item.half1} + ${item.half2}\n`;
     }
   });
+
+  if (hasBorda) {
+    message += `\n*Borda:* ${crust}\n`;
+  }
 
   const total = calculateTotal();
   message += `--------------------\n\n`;
