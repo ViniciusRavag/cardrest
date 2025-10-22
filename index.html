@@ -1,1084 +1,644 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Pizzaria Bella Napoli - Cardápio Digital</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-<style>
-:root{
---primary-color:#d32f2f;
---secondary-color:#f57c00;
---text-dark:#333;
---text-light:#777;
---bg-light:#f8f8f8;
---white:#fff;
---border-color:#e0e0e0;
---success-color:#28a745;
---danger-color:#d9534f;
---cart-color:#D40C0A;
-}
-*{
-margin: 0;
-padding: 0;
-box-sizing: border-box;
-}
-body{
-font-family:'Inter', sans-serif;
-background: var(--bg-light);
-color: var(--text-dark);
-padding-bottom: 100px;
-}
-body.modal-open{
-overflow: hidden;
-}
-.banner-image{
-width: 100%;
-height: 180px;
-object-fit: cover;
-}
-.category-tabs{
-display: flex;
-overflow-x: auto;
-padding: 15px 20px 10px;
-gap: 10px;
-background: var(--white);
-border-bottom: 1px solid var(--border-color);
-scrollbar-width: none;
-position: sticky;
-top: 0;
-z-index: 10;
-}
-.category-tabs::-webkit-scrollbar{
-display: none;
-}
-.category-tab{
-padding: 8px 16px;
-border-radius: 20px;
-background:#f1f1f1;
-border: 1px solid var(--border-color);
-white-space: nowrap;
-font-size: 0.85rem;
-font-weight: 600;
-color:#555;
-cursor: pointer;
-transition: all 0.3s ease;
-}
-.category-tab.active{
-background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-color: var(--white);
-border-color: var(--primary-color);
-}
-.products-container{
-padding: 20px 15px;
-}
-.products-grid{
-display: grid;
-grid-template-columns: 1fr 1fr;
-gap: 15px;
-}
-.product-card{
-background: var(--white);
-border-radius: 12px;
-overflow: hidden;
-box-shadow: 0 2px 8px rgba(0,0,0,0.07);
-display: flex;
-flex-direction: column;
-}
-.product-image{
-width: 100%;
-height: 120px;
-background:#eee;
-}
-.product-image img{
-width: 100%;
-height: 100%;
-object-fit: cover;
-}
-.product-info{
-padding: 12px;
-display: flex;
-flex-direction: column;
-flex-grow: 1;
-}
-.product-name{
-font-size: 0.9rem;
-font-weight: 600;
-color: var(--text-dark);
-margin-bottom: 8px;
-flex-grow: 1;
-}
-.product-description{
-font-size: 0.75rem;
-color: var(--text-light);
-line-height: 1.4;
-flex-grow: 1;
-margin-bottom: 10px;
-}
-.product-footer{
-display: flex;
-flex-direction: column;
-gap: 8px;
-margin-top: auto;
-}
-.product-price{
-font-size: 1.1rem;
-font-weight: 700;
-color: var(--success-color);
-padding: 0 4px;
-}
-.view-options-btn{
-background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-color: white;
-border: none;
-border-radius: 6px;
-font-size: 0.8rem;
-font-weight: 600;
-cursor: pointer;
-transition: all 0.2s ease;
-box-shadow: 0 2px 5px rgba(211, 47, 47, 0.3);
-padding: 12px;
-width: 100%;
-text-align: center;
-}
-.modal-overlay{
-position: fixed;
-top: 0;
-left: 0;
-right: 0;
-bottom: 0;
-background: rgba(0, 0, 0, 0.6);
-z-index: 2000;
-display: flex;
-align-items: center;
-justify-content: center;
-padding: 20px;
-opacity: 0;
-pointer-events: none;
-transition: opacity 0.3s ease;
-}
-.modal-overlay.active{
-opacity: 1;
-pointer-events: auto;
-}
-.modal-content{
-background: var(--white);
-border-radius: 12px;
-width: 100%;
-max-width: 450px;
-max-height: 90vh;
-overflow-y: auto;
-display: flex;
-flex-direction: column;
-transform: scale(0.95);
-opacity: 0;
-transition: transform 0.3s ease-out, opacity 0.2s ease-out;
-}
-.modal-overlay.active .modal-content{
-transform: scale(1);
-opacity: 1;
-}
-.modal-header{
-padding: 15px 20px;
-border-bottom: 1px solid var(--border-color);
-display: flex;
-justify-content: space-between;
-align-items: center;
-background: var(--white);
-position: sticky;
-top: 0;
-z-index: 10;
-}
-.modal-title{
-font-size: 1.2rem;
-font-weight: bold;
-}
-.close-btn{
-background: none;
-border: none;
-font-size: 1.8rem;
-color:#888;
-cursor: pointer;
-}
-.modal-body{
-padding: 0 20px 20px;
-flex-grow: 1;
-}
-.modal-footer{
-display: flex;
-justify-content: space-between;
-align-items: center;
-padding: 15px 20px;
-border-top: 1px solid var(--border-color);
-background: var(--white);
-position: sticky;
-bottom: 0;
-}
-.options-product-image{
-width: 100%;
-height: 180px;
-object-fit: cover;
-}
-.options-product-details{
-padding: 15px 20px;
-}
-.options-product-details .product-description{
-font-size: 0.9rem;
-margin-bottom: 15px;
-}
-.option-group{
-border-top: 1px solid var(--border-color);
-padding: 15px 20px;
-}
-.option-group-title{
-font-size: 1rem;
-font-weight: 700;
-margin-bottom: 5px;
-}
-.option-item{
-display: flex;
-flex-direction: column;
-align-items: flex-start;
-padding: 12px 0;
-}
-.option-item-main{
-display: flex;
-justify-content: space-between;
-align-items: center;
-width: 100%;
-}
-.option-item label{
-display: flex;
-align-items: center;
-gap: 10px;
-font-size: 0.9rem;
-font-weight: 500;
-flex-grow: 1;
-}
-.option-item input[type="radio"]{
-width: 20px;
-height: 20px;
-accent-color: var(--primary-color);
-}
-.quantity-controls{
-display: flex;
-align-items: center;
-gap: 15px;
-}
-.qty-btn{
-width: 35px;
-height: 35px;
-border-radius: 50%;
-border: 1px solid var(--primary-color);
-background: var(--white);
-color: var(--primary-color);
-font-size: 1.5rem;
-display: flex;
-align-items: center;
-justify-content: center;
-cursor: pointer;
-}
-.qty-btn:last-child{
-background: var(--primary-color);
-color: var(--white);
-}
-.quantity{
-font-size: 1.1rem;
-font-weight: 600;
-}
-.add-to-cart-btn{
-background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-color: var(--white);
-border: none;
-border-radius: 8px;
-padding: 12px 20px;
-font-size: 0.9rem;
-font-weight: 600;
-cursor: pointer;
-display: flex;
-gap: 10px;
-}
-.add-to-cart-btn .price{
-background: rgba(0,0,0,0.1);
-padding: 2px 8px;
-border-radius: 5px;
-}
-.floating-cart{
-position: fixed;
-bottom: 20px;
-left: 50%;
-z-index: 1000;
-transition: opacity 0.3s, transform 0.3s;
-opacity: 0;
-transform: translate(-50%, 20px);
-pointer-events: none;
-}
-.floating-cart.visible{
-opacity: 1;
-transform: translateX(-50%);
-pointer-events: auto;
-}
-.cart-btn{
-background: linear-gradient(135deg, var(--cart-color), var(--cart-color));
-color: white;
-border: none;
-border-radius: 50px;
-padding: 12px 25px;
-display: flex;
-align-items: center;
-gap: 10px;
-font-size: 0.9rem;
-font-weight: 600;
-cursor: pointer;
-box-shadow: 0 4px 20px rgba(0,0,0, 0.2);
-min-width: 220px;
-justify-content: space-between;
-}
-.cart-count{
-background: rgba(255, 255, 255, 0.2);
-border-radius: 50%;
-width: 24px;
-height: 24px;
-display: flex;
-align-items: center;
-justify-content: center;
-font-size: 0.8rem;
-font-weight: bold;
-}
-.empty-cart{
-text-align: center;
-padding: 50px 20px;
-color: var(--text-light);
-}
-.cart-item{
-display: flex;
-gap: 15px;
-padding: 15px 0;
-border-bottom: 1px solid #f0f0f0;
-}
-.cart-item-image img{
-width: 60px;
-height: 60px;
-border-radius: 8px;
-object-fit: cover;
-flex-shrink: 0;
-}
-.cart-item-content{
-flex-grow: 1;
-display: flex;
-flex-direction: column;
-}
-.cart-item-name{
-font-weight: 600;
-margin-bottom: 4px;
-}
-.cart-item-details{
-font-size: 0.8rem;
-color: var(--text-light);
-list-style-position: inside;
-padding-left: 5px;
-}
-.cart-item-footer{
-display: flex;
-justify-content: space-between;
-align-items: center;
-margin-top: auto;
-padding-top: 10px;
-}
-.cart-item-price{
-font-size: 1rem;
-font-weight: 600;
-color: var(--text-dark);
-}
-.cart-section{
-background: var(--white);
-padding: 20px;
-border-radius: 12px;
-margin: 20px 0;
-box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-}
-.cart-section-title{
-font-size: 1rem;
-font-weight: 700;
-margin-bottom: 15px;
-}
-.total-row{
-display: flex;
-justify-content: space-between;
-margin-bottom: 10px;
-font-size: 0.9rem;
-color:#555;
-}
-.total-row.final{
-font-size: 1.2rem;
-font-weight: bold;
-color: var(--text-dark);
-padding-top: 10px;
-border-top: 1px solid var(--border-color);
-margin-top: 10px;
-}
-.form-group{
-margin-bottom: 15px;
-}
-.form-label{
-display: block;
-margin-bottom: 6px;
-font-weight: 600;
-font-size: 0.9rem;
-}
-.form-input,
-.form-select{
-width: 100%;
-padding: 12px;
-border: 1px solid var(--border-color);
-border-radius: 8px;
-font-size: 0.9rem;
-background:#fdfdfd;
-}
-.form-input:focus,
-.form-select:focus{
-outline: none;
-border-color: var(--primary-color);
-}
-.form-select:disabled{
-background: #f5f5f5;
-color: #999;
-cursor: not-allowed;
-}
-.whatsapp-btn{
-width: 100%;
-padding: 15px;
-background: linear-gradient(135deg, #25d366,#128c7e);
-color: white;
-border: none;
-border-radius: 10px;
-font-size: 1rem;
-font-weight: 600;
-cursor: pointer;
-display: flex;
-align-items: center;
-justify-content: center;
-gap: 10px;
-margin-top: 20px;
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>La Encasa - Cardápio Digital</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #ff6b35;
+--secondary-color: #f7931e;
+            --text-dark: #333;
+            --text-light: #777;
+            --bg-light: #f8f8f8;
+            --white: #fff;
+            --border-color: #e0e0e0;
+            --success-color: #28a745;
+            --danger-color: #d9534f;
+            --cart-color: #D40C0A;
 }
 
-/* Tipo de Pizza Selection Screen */
-.type-selection-screen {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 40px 20px;
-  min-height: 100vh;
-  background: var(--bg-light);
+        * { margin: 0; padding: 0; box-sizing: border-box;
 }
-.type-selection-title {
-  font-size: 1.8rem;
-  font-weight: 700;
-  margin-bottom: 30px;
-  color: var(--primary-color);
-  text-align: center;
+        body { font-family: 'Inter', sans-serif; background: var(--bg-light); color: var(--text-dark); padding-bottom: 100px;
 }
-.type-options {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 15px;
-  width: 100%;
-  max-width: 500px;
+
+        /* --- ALTERAÇÃO 4: Adicionado para congelar o scroll quando o modal está aberto --- */
+        body.modal-open {
+            overflow: hidden;
 }
-.type-option {
-  background: var(--white);
-  border: 2px solid var(--border-color);
-  border-radius: 12px;
-  padding: 20px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+
+        /* Estilos do Cardápio Principal */
+        .category-tabs { display: flex;
+overflow-x: auto; padding: 15px 20px 10px; gap: 10px; background: var(--white); border-bottom: 1px solid var(--border-color); scrollbar-width: none; position: sticky; top: 0; z-index: 10;
 }
-.type-option:hover {
-  border-color: var(--primary-color);
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        .category-tabs::-webkit-scrollbar { display: none;
 }
-.type-option.selected {
-  border-color: var(--primary-color);
-  background: rgba(211, 47, 47, 0.05);
+        .category-tab { padding: 8px 16px; border-radius: 20px; background: #f1f1f1;
+border: 1px solid var(--border-color); white-space: nowrap; font-size: 0.85rem; font-weight: 600; color: #555; cursor: pointer; transition: all 0.3s ease;
 }
-.type-option h3 {
-  font-size: 1.1rem;
-  font-weight: 600;
-  color: var(--text-dark);
+        .category-tab.active { background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)); color: var(--white); border-color: var(--primary-color);
 }
-.type-option .price {
-  font-size: 1.2rem;
-  font-weight: 700;
-  color: var(--success-color);
+        .products-container { padding: 20px 15px;
 }
-.continue-btn {
-  background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-  color: white;
-  border: none;
-  border-radius: 10px;
-  padding: 15px 30px;
-  font-size: 1.1rem;
-  font-weight: 600;
-  cursor: pointer;
-  margin-top: 30px;
-  width: 250px;
-  box-shadow: 0 4px 15px rgba(211, 47, 47, 0.3);
+        .products-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px;
 }
-.back-btn {
-  background: #666;
-  color: white;
-  border: none;
-  border-radius: 10px;
-  padding: 10px 20px;
-  font-size: 0.9rem;
-  font-weight: 600;
-  cursor: pointer;
-  margin-top: 20px;
+        .product-card { background: var(--white); border-radius: 12px; overflow: hidden;
+box-shadow: 0 2px 8px rgba(0,0,0,0.07); display: flex; flex-direction: column; }
+        .product-image { width: 100%;
+height: 120px; background: #eee; }
+        .product-image img { width: 100%; height: 100%;
+object-fit: cover; }
+        .product-info { padding: 12px; display: flex; flex-direction: column; flex-grow: 1;
 }
-.error-message {
-  color: var(--danger-color);
-  font-size: 0.85rem;
-  margin-top: 5px;
-  display: none;
+        .product-name { font-size: 0.9rem; font-weight: 600; color: var(--text-dark); margin-bottom: 8px;
+/* Aumentado margin-bottom */ flex-grow: 1; }
+        .product-description { font-size: 0.75rem; color: var(--text-light);
+line-height: 1.4; flex-grow: 1; margin-bottom: 10px; }
+        
+        .product-footer {
+            display: flex;
+flex-direction: column;
+            gap: 8px;
+            margin-top: auto;
+            /* --- ALTERAÇÃO 1: Removido align-items para permitir que o botão ocupe a largura total --- */
+        }
+        .product-price { font-size: 1.1rem;
+font-weight: 700; color: var(--success-color); padding: 0 4px; /* Adicionado padding para alinhar com o botão */ }
+        .view-options-btn { 
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+color: white; border: none; border-radius: 6px; font-size: 0.8rem; font-weight: 600; cursor: pointer; transition: all 0.2s ease;
+box-shadow: 0 2px 5px rgba(255, 107, 53, 0.3);
+            /* --- ALTERAÇÃO 1: Padding aumentado e largura total --- */
+            padding: 12px;
+width: 100%;
+            text-align: center;
+        }
+
+        /* Modal estilo Popup Centralizado */
+        .modal-overlay {
+            position: fixed;
+top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: 2000;
+            display: flex;
+            align-items: center;
+justify-content: center;
+            padding: 20px;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
 }
-</style>
+        .modal-overlay.active { opacity: 1; pointer-events: auto;
+}
+        
+        .modal-content {
+            background: var(--white);
+border-radius: 12px;
+            width: 100%;
+            max-width: 450px;
+            max-height: 90vh;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            transform: scale(0.95);
+            opacity: 0;
+transition: transform 0.3s ease-out, opacity 0.2s ease-out;
+        }
+        .modal-overlay.active .modal-content { transform: scale(1);
+opacity: 1; }
+        
+        .modal-header { padding: 15px 20px;
+border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; background: var(--white); position: sticky; top: 0; z-index: 10;
+}
+        .modal-title { font-size: 1.2rem; font-weight: bold;
+}
+        .close-btn { background: none; border: none; font-size: 1.8rem; color: #888; cursor: pointer;
+}
+        .modal-body { padding: 0 20px 20px; flex-grow: 1;
+}
+        .modal-footer { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px;
+border-top: 1px solid var(--border-color); background: var(--white); position: sticky; bottom: 0;
+}
+
+        /* Modal de Opções */
+        #optionsModal .modal-body { padding: 0;
+}
+        .options-product-image { width: 100%; height: 180px; object-fit: cover;
+}
+        .options-product-details { padding: 15px 20px;
+}
+        .options-product-details .product-description { font-size: 0.9rem; margin-bottom: 15px;
+}
+        .option-group { border-top: 1px solid var(--border-color); padding: 15px 20px;
+}
+        .option-group-title { font-size: 1rem; font-weight: 700; margin-bottom: 5px;
+}
+        .option-group-subtitle { font-size: 0.8rem; color: var(--text-light); margin-bottom: 15px;
+}
+        .option-item { display: flex; flex-direction: column; align-items: flex-start; padding: 12px 0;
+}
+        .option-item-main { display: flex; justify-content: space-between; align-items: center; width: 100%;
+}
+        .option-item label { display: flex; align-items: center; gap: 10px; font-size: 0.9rem;
+font-weight: 500; flex-grow: 1; }
+        .option-item input[type="radio"], .option-item input[type="checkbox"] { width: 20px;
+height: 20px; accent-color: var(--primary-color); }
+        .option-price { font-size: 0.9rem; font-weight: 500; color: var(--text-dark);
+}
+        /* --- ALTERAÇÃO 2: Estilo para a descrição da opção --- */
+        .option-item-description {
+            font-size: 0.8rem;
+color: var(--text-light);
+            padding-left: 30px; /* Alinha com o texto da opção, considerando o gap e o tamanho do input */
+            margin-top: 2px;
+}
+        .quantity-controls { display: flex; align-items: center; gap: 15px;
+}
+        .qty-btn { width: 35px; height: 35px; border-radius: 50%; border: 1px solid var(--primary-color);
+background: var(--white); color: var(--primary-color); font-size: 1.5rem; display: flex; align-items: center; justify-content: center; cursor: pointer;
+}
+        .qty-btn:last-child { background: var(--primary-color); color: var(--white);
+}
+        .quantity { font-size: 1.1rem; font-weight: 600;
+}
+        .add-to-cart-btn { background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)); color: var(--white); border: none; border-radius: 8px;
+padding: 12px 20px; font-size: 0.9rem; font-weight: 600; cursor: pointer; display: flex; gap: 10px;
+}
+        .add-to-cart-btn .price { background: rgba(0,0,0,0.1); padding: 2px 8px; border-radius: 5px;
+}
+
+        /* Carrinho Flutuante e Modal do Carrinho */
+        .floating-cart { position: fixed;
+bottom: 20px; left: 50%; z-index: 1000; transition: opacity 0.3s, transform 0.3s; opacity: 0; transform: translate(-50%, 20px); pointer-events: none;
+}
+        .floating-cart.visible { opacity: 1; transform: translateX(-50%); pointer-events: auto;
+}
+        .cart-btn { background: linear-gradient(135deg, var(--cart-color), var(--cart-color)); color: white; border: none; border-radius: 50px;
+padding: 12px 25px; display: flex; align-items: center; gap: 10px; font-size: 0.9rem; font-weight: 600; cursor: pointer;
+box-shadow: 0 4px 20px rgba(0,0,0, 0.2); min-width: 220px; justify-content: space-between;
+}
+        .cart-count { background: rgba(255, 255, 255, 0.2); border-radius: 50%; width: 24px;
+height: 24px; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; font-weight: bold;
+}
+        .empty-cart { text-align: center; padding: 50px 20px; color: var(--text-light);
+}
+        
+        /* --- ALTERAÇÃO 3: Layout do item do carrinho reestruturado --- */
+        .cart-item { display: flex;
+gap: 15px; padding: 15px 0; border-bottom: 1px solid #f0f0f0; }
+        .cart-item-image img { width: 60px;
+height: 60px; border-radius: 8px; object-fit: cover; flex-shrink: 0; }
+        .cart-item-content { flex-grow: 1;
+display: flex; flex-direction: column; }
+        .cart-item-name { font-weight: 600; margin-bottom: 4px;
+}
+        .cart-item-details { font-size: 0.8rem; color: var(--text-light); list-style-position: inside; padding-left: 5px;
+}
+        .cart-item-footer { display: flex; justify-content: space-between; align-items: center; margin-top: auto; padding-top: 10px;
+}
+        .cart-item-price { font-size: 1rem; font-weight: 600; color: var(--text-dark);
+}
+        
+        .cart-section { background: var(--white);
+padding: 20px; border-radius: 12px; margin: 20px 0; box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+        .cart-section-title { font-size: 1rem; font-weight: 700; margin-bottom: 15px;
+}
+        .total-row { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 0.9rem; color: #555;
+}
+        .total-row.final { font-size: 1.2rem; font-weight: bold; color: var(--text-dark); padding-top: 10px;
+border-top: 1px solid var(--border-color); margin-top: 10px; }
+        .form-group { margin-bottom: 15px;
+}
+        .form-label { display: block; margin-bottom: 6px; font-weight: 600; font-size: 0.9rem;
+}
+        .form-input, .form-select { width: 100%; padding: 12px; border: 1px solid var(--border-color);
+border-radius: 8px; font-size: 0.9rem; background: #fdfdfd; }
+        .form-input:focus, .form-select:focus { outline: none;
+border-color: var(--primary-color); }
+        .delivery-type-group { display: flex; gap: 10px; margin-bottom: 15px;
+}
+        .delivery-type-group label { display: flex; align-items: center; gap: 8px;
+}
+        .whatsapp-btn { width: 100%; padding: 15px; background: linear-gradient(135deg, #25d366, #128c7e); color: white;
+border: none; border-radius: 10px; font-size: 1rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; margin-top: 20px;
+}
+    </style>
 </head>
 <body>
-<div id="typeSelectionScreen" class="type-selection-screen">
-  <h2 class="type-selection-title">Escolha o tipo de pizza</h2>
-  <div class="type-options" id="typeOptions">
-    <div class="type-option" data-type="pre-assada-sem-borda" data-price="39.00">
-      <h3>Pré assada sem borda</h3>
-      <span class="price">R$ 39,00</span>
+    <div class="category-tabs">
+        <div class="category-tab active" onclick="filterCategory('all', this)">Todos</div>
+        <div class="category-tab" onclick="filterCategory('Entrada', this)">Entradas</div>
+        <div class="category-tab" onclick="filterCategory('Principal', this)">Principais</div>
+        <div class="category-tab" onclick="filterCategory('Sobremesa', this)">Sobremesas</div>
+        <div class="category-tab" onclick="filterCategory('Combo', this)">Combos</div>
     </div>
-    <div class="type-option" data-type="pre-assada-com-borda" data-price="45.00">
-      <h3>Pré assada com borda</h3>
-      <span class="price">R$ 45,00</span>
-    </div>
-    <div class="type-option" data-type="assada-sem-borda" data-price="49.00">
-      <h3>Assada sem borda</h3>
-      <span class="price">R$ 49,00</span>
-    </div>
-    <div class="type-option" data-type="assada-com-borda" data-price="55.00">
-      <h3>Assada com borda</h3>
-      <span class="price">R$ 55,00</span>
-    </div>
-    <div class="type-option" data-type="brotinho" data-price="32.00">
-      <h3>Brotinho</h3>
-      <span class="price">R$ 32,00</span>
-    </div>
-  </div>
-  <button class="continue-btn" onclick="continueToMenu()" disabled>Continuar</button>
-</div>
+    <div class="products-container"><div class="products-grid" id="productsGrid"></div></div>
+    <div class="floating-cart" id="floatingCart"><button class="cart-btn" onclick="openCartModal()"><span>🛒 Ver Carrinho</span><span id="cartTotal">R$ 0,00</span><div class="cart-count" id="cartCount">0</div></button></div>
 
-<div id="menuScreen" style="display: none;">
-  <img src="https://placehold.co/800x180/d32f2f/FFFFFF?text=Pizzaria+Bella+Napoli+-+As+Melhores+Pizzas+da+Cidade!" alt="Banner Pizzaria" class="banner-image">
-  <div class="category-tabs">
-    <div class="category-tab active" onclick="filterCategory('all', this)">Todos</div>
-    <div class="category-tab" onclick="filterCategory('Tradicional', this)">Tradicional</div>
-    <div class="category-tab" onclick="filterCategory('Especial', this)">Especiais</div>
-    <div class="category-tab" onclick="filterCategory('Doce', this)">Doces</div>
-  </div>
-
-  <div class="products-container">
-    <div class="products-grid" id="productsGrid"></div>
-  </div>
-</div>
-
-<div class="floating-cart" id="floatingCart">
-  <button class="cart-btn" onclick="openCartModal()">
-    <span>🛒 Ver Carrinho</span>
-    <span id="cartTotal">R$ 0,00</span>
-    <div class="cart-count" id="cartCount">0</div>
-  </button>
-</div>
-
-<div class="modal-overlay" id="optionsModal"></div>
+    <div class="modal-overlay" id="optionsModal"></div>
+    
 <div class="modal-overlay" id="cartModal"></div>
 
-<script>
-const STORES = [
-  { id: 1, name: "Pizzaria Bella Napoli - Centro", address: "Rua das Pizzas, 123", whatsapp: "5516991421704" }
-];
+    <script>
+        // --- CONFIGURAÇÕES GLOBAIS ---
+        const STORES = [
+            { id: 1, name: "La Encasa - Loja Centro", address: "Rua Principal, 123", whatsapp: "5516991421704" },
+            { id: 2, name: "La Encasa - Loja Shopping", address: "Av. das Compras, 456", whatsapp: "5511922222222" }
+        ];
+        
+        const DELIVERY_ZONES = {
+            "14010": 5.00, "14015": 6.00, "14020": 7.50,
+            "14021": 8.00, "14403": 0, "default": 10.00
+        };
+        
+        const PAYMENT_METHODS = ["Dinheiro", "Cartão de Crédito", "Cartão de Débito", "Pix"];
 
-const PAYMENT_METHODS = ["Dinheiro", "Cartão de Crédito", "Cartão de Débito", "Pix"];
-const CRUST_OPTIONS = ["Catupiry", "Cheddar"];
+        const PRODUCTS = [
+            { id: 1, name: "Nachos Chilli", description: "Sequinhas tortilhas de milho chips, acompanhadas com delicioso chilli de carne moída e cheddar.", price: 28.68, image: "https://static.ifood-static.com.br/image/upload/t_medium/pratos/7d1ebf3c-fc6a-4235-821f-1860bccaffad/202109132014_1224_i.jpg", category: "Entrada" },
+            { 
+                id: 2, name: "2 Tacos Mexican Style", description: "Acompanhado de nossas exclusivas tortilhas de trigo gratinadas, servido com nossos molhos e o recheio que desejar", price: 21.60, image: "https://static.ifood-static.com.br/image/upload/t_medium/pratos/7d1ebf3c-fc6a-4235-821f-1860bccaffad/202003212202_CWSo_t.jpg", category: "Principal",
+                options: [{ 
+                    title: "Recheio", subtitle: "Escolha até 2 opções", type: "checkbox", max: 2, 
+                    items: [
+                         { name: "Al pastor - Carne suína com abacaxi", price: 0 },
+                        { name: "Chili de carne moída", price: 0 },
+                        { name: "Frango Agridoce cubos", price: 0 },
+                         { name: "Paleta Bovina - barbacoa desfiada", price: 0 },
+                        { name: "Vegetais", price: 0, description: "Azeitona, alface, queijo, milho, pimentão e pico de galo" }
+                     ] 
+                }]
+            },
+            { 
+                id: 3, name: "2 Burritos Tradicionais", description: "Tradicional tortilha de trigo de 16 cm rechada e gratinada. acompanha guacamole, salsa picante e sour cream", price: 29.50, image: "https://anamariabrogui.com.br/assets/uploads/receitas/fotos/usuario-2847-e7b65a5775641aa780fa2b34b5a624e4.jpg", category: "Principal",
+                options: [{ 
+                    title: "Recheio", subtitle: "Escolha até 2 opções", type: "checkbox", max: 2, 
+                    items: [
+                         { name: "Carne Bovina Barbacoa", price: 0 }, { name: "Chili de carne moída", price: 0 },
+                        { name: "Veggie", price: 0 }, { name: "Frango agridoce crocante", price: 0 }
+                    ] 
+                }]
+            },
+            { id: 4, name: "Nachos Frango", description: "Sequinhas tortilhas de milho chips, acompanhadas com frango, cheddar e bacon.", price: 28.68, image: "https://assets.tmecosys.com/image/upload/t_web_rdp_recipe_584x480_1_5x/img/recipe/ras/Assets/09ADC2F0-6DCA-4C04-ABDC-25F9E771DA4E/Derivates/AD23C769-B1FA-486D-9CE5-38B7E7E106BC.jpg", category: "Entrada" },
+            { 
+                id: 5, name: "Combo Guadalupe", description: "Uma apetitosa combinação de nosso exclusivos pratos composta por: nachos crocantes, chicken nuggets com molho barbecue, batatas fritas com cheddar e bacon, 4 burritos, 4 tacos, guacamole, sour cream, salsa picante, chilli e mini churros com doce de leite", price: 135.80, image: "https://static.ifood-static.com.br/image/upload/t_medium/pratos/7d1ebf3c-fc6a-4235-821f-1860bccaffad/201903142151_comb.jpeg", category: "Combo",
+                options: [
+                    { title: "Burrito", subtitle: "Selecione 4 opções", type: "checkbox", max: 4, items: [{ name: "Burrito AL pastor", price: 0 }, { name: "Burrito Chilli", price: 0 }, { name: "Burrito vegetariano", price: 0 }, { name: "Burrito frango crocante", price: 0 }, { name: "Burrito Paleta e Barbacoa", price: 0 }] },
+                    { title: "Taco", subtitle: "Escolha 4 opções", type: "checkbox", max: 4, items: [{ name: "Al pastor", price: 0 }, { name: "Chilli", price: 6.00 }, { name: "Vegetariano", price: 0 }] }
+                ]
+            },
+            { 
+                id: 6, name: "Batata Frita", description: "Porção generosa de batata frita crocante com maionese da casa.", price: 0, image: "https://images.unsplash.com/photo-1541592106381-b65b60662604?auto=format&fit=crop&w=435", category: "Entrada",
+                options: [
+                    { title: "Escolha um tamanho", subtitle: "Selecione uma opção", type: "radio", required: true, items: [{ name: "Pequena", price: 10.00 }, { name: "Média", price: 15.00 }, { name: "Grande", price: 20.00 }] },
+                    { title: "Turbine sua batata", subtitle: "Escolha até 2 opções", type: "checkbox", max: 2, items: [{ name: "Bacon em cubos", price: 5.00 }, { name: "Cheddar cremoso", price: 6.00 }] }
+                ]
+            },
+            { id: 7, name: "Mini Churros com Doce de Leite", description: "Delicioso doce tradicional", price: 12.00, image: "https://www.portonovoalimentos.com.br/medias/news/depositphotos-406675082-xl.jpg?w=600&h=auto&fit=fit&crop=center", category: "Sobremesa" }
+        ];
+        // --- ESTADO DA APLICAÇÃO ---
+        let cart = [];
+        let currentCategory = 'all';
+        let cartState = {
+            selectedStoreId: STORES[0].id,
+            deliveryType: 'delivery',
+            deliveryFee: 0
+        };
+        // --- INICIALIZAÇÃO ---
+        document.addEventListener('DOMContentLoaded', () => {
+            renderProducts();
+            updateCartDisplay();
+        });
+        // --- RENDERIZAÇÃO ---
+        function renderProducts() {
+            const grid = document.getElementById('productsGrid');
+            grid.innerHTML = '';
+            const filtered = PRODUCTS.filter(p => currentCategory === 'all' || p.category === currentCategory);
+            filtered.forEach(product => {
+                const card = document.createElement('div');
+                card.className = 'product-card';
+                const basePrice = product.price > 0 ? product.price : (product.options && product.options[0].items[0].price);
+                
+                card.innerHTML = `
+                    <div class="product-image"><img src="${product.image}" alt="${product.name}" loading="lazy"></div>
+                    <div class="product-info">
+                        <div class="product-name">${product.name}</div>
+                         <div class="product-footer">
+                            <span class="product-price">${(product.price === 0) ? 'A partir de' : ''} R$ ${basePrice.toFixed(2).replace('.', ',')}</span>
+                            <button class="view-options-btn" onclick="openOptionsModal(${product.id})">Eu Quero!</button>
+                         </div>
+                    </div>`;
+                grid.appendChild(card);
+            });
+        }
 
-const PRODUCTS = [
-  {
-    id: 1,
-    name: "Margherita",
-    description: "Molho de tomate, mussarela, manjericão fresco e azeite de oliva.",
-    image: "https://placehold.co/600x400/FF6B35/FFFFFF?text=Margherita",
-    category: "Tradicional"
-  },
-  {
-    id: 2,
-    name: "Pepperoni",
-    description: "Molho de tomate, mussarela e pepperoni fatiado.",
-    image: "https://placehold.co/600x400/FF6B35/FFFFFF?text=Pepperoni",
-    category: "Tradicional"
-  },
-  {
-    id: 3,
-    name: "Quatro Queijos",
-    description: "Mussarela, gorgonzola, parmesão e provolone.",
-    image: "https://placehold.co/600x400/FF6B35/FFFFFF?text=4+Queijos",
-    category: "Especial"
-  },
-  {
-    id: 4,
-    name: "Frango com Catupiry",
-    description: "Molho de tomate, frango desfiado, catupiry e mussarela.",
-    image: "https://placehold.co/600x400/FF6B35/FFFFFF?text=Frango+Catupiry",
-    category: "Especial"
-  },
-  {
-    id: 5,
-    name: "Calabresa",
-    description: "Molho de tomate, mussarela e calabresa fatiada.",
-    image: "https://placehold.co/600x400/FF6B35/FFFFFF?text=Calabresa",
-    category: "Tradicional"
-  },
-  {
-    id: 6,
-    name: "Portuguesa",
-    description: "Molho de tomate, mussarela, presunto, ovos, cebola, pimentão e azeitonas.",
-    image: "https://placehold.co/600x400/FF6B35/FFFFFF?text=Portuguesa",
-    category: "Especial"
-  },
-  {
-    id: 7,
-    name: "Chocolate com Morango",
-    description: "Chocolate ao leite e morangos frescos.",
-    image: "https://placehold.co/600x400/FF6B35/FFFFFF?text=Chocolate+Morango",
-    category: "Doce"
-  },
-  {
-    id: 8,
-    name: "Banana com Canela",
-    description: "Banana fatiada, canela e leite condensado.",
-    image: "https://placehold.co/600x400/FF6B35/FFFFFF?text=Banana+Canela",
-    category: "Doce"
-  }
-];
+        function filterCategory(category, element) {
+            currentCategory = category;
+            document.querySelectorAll('.category-tab').forEach(tab => tab.classList.remove('active'));
+            element.classList.add('active');
+            renderProducts();
+        }
 
-let cart = [];
-let currentCategory = 'all';
-let selectedPizzaType = null;
-let selectedPizzaPrice = 0;
+        // --- LÓGICA DO MODAL DE OPÇÕES ---
+        function openOptionsModal(productId) {
+            const product = PRODUCTS.find(p => p.id === productId);
+            if (!product) return;
+            const modal = document.getElementById('optionsModal');
+            let optionsHTML = '';
+            if(product.options) {
+                product.options.forEach((group, groupIndex) => {
+                    optionsHTML += `<div class="option-group"><div class="option-group-title">${group.title}</div><div class="option-group-subtitle">${group.subtitle}</div>`;
+                    group.items.forEach((item, itemIndex) => {
+                        const inputId = `group-${groupIndex}-item-${itemIndex}`;
+                        const descriptionHTML = item.description ? `<div class="option-item-description">${item.description}</div>` : '';
+                        
+                        let onChangeAction = `updateOptionPrice(${productId})`;
+                        if (group.type === 'checkbox' && group.max) {
+                            onChangeAction = `handleOptionChange(event, ${productId}, ${group.max})`;
+                        }
 
-document.addEventListener('DOMContentLoaded', () => {
-  setupTypeSelection();
-});
+                        optionsHTML += `<div class="option-item">
+                             <div class="option-item-main">
+                                <label for="${inputId}">
+                                    <input type="${group.type}" id="${inputId}" name="group-${groupIndex}" value="${item.price}" data-name="${item.name}" onchange="${onChangeAction}">
+                                     ${item.name}
+                                </label>
+                                <span class="option-price">+ R$ ${item.price.toFixed(2).replace('.', ',')}</span>
+                             </div>
+                            ${descriptionHTML}
+                        </div>`;
+                    });
+                    optionsHTML += `</div>`;
+                });
+            }
+            modal.innerHTML = `<div class="modal-content">
+                <div class="modal-header"><h3 class="modal-title">${product.name}</h3><button class="close-btn" onclick="closeOptionsModal()">&times;</button></div>
+                <div class="modal-body">
+                    <img src="${product.image}" alt="${product.name}" class="options-product-image">
+                    <div class="options-product-details"><p class="product-description">${product.description}</p></div>
+                    ${optionsHTML}
+                </div>
+                <div class="modal-footer">
+                    <div class="quantity-controls"><button class="qty-btn" onclick="updateOptionQuantity(-1, ${productId})">-</button><span class="quantity" id="options-quantity">1</span><button class="qty-btn" onclick="updateOptionQuantity(1, ${productId})">+</button></div>
+                    <button class="add-to-cart-btn" onclick="addItemToCartFromModal(${productId})">Adicionar <span class="price" id="options-total-price"></span></button>
+                </div></div>`;
+            document.body.classList.add('modal-open');
+            modal.classList.add('active');
+            updateOptionPrice(productId);
+        }
+        function closeOptionsModal() { 
+            document.getElementById('optionsModal').classList.remove('active');
+            if (!document.getElementById('cartModal').classList.contains('active')) {
+                document.body.classList.remove('modal-open');
+            }
+        }
 
-function setupTypeSelection() {
-  const options = document.querySelectorAll('.type-option');
-  const continueBtn = document.querySelector('.continue-btn');
-  
-  options.forEach(option => {
-    option.addEventListener('click', () => {
-      options.forEach(opt => opt.classList.remove('selected'));
-      option.classList.add('selected');
-      selectedPizzaType = option.dataset.type;
-      selectedPizzaPrice = parseFloat(option.dataset.price);
-      continueBtn.disabled = false;
-    });
-  });
-}
+        // *** FUNÇÃO CORRIGIDA ***
+        function handleOptionChange(event, productId, maxLimit) {
+            const checkbox = event.target;
+            const groupName = checkbox.name;
+            const modal = document.getElementById('optionsModal');
+            const checkedCount = modal.querySelectorAll(`input[name="${groupName}"]:checked`).length;
 
-function continueToMenu() {
-  if (!selectedPizzaType) return;
-  document.getElementById('typeSelectionScreen').style.display = 'none';
-  document.getElementById('menuScreen').style.display = 'block';
-  renderProducts();
-  updateCartDisplay();
-}
+            if (checkedCount > maxLimit) {
+                alert(`Você pode escolher no máximo ${maxLimit} opções para este grupo.`);
+                checkbox.checked = false; // Desfaz a seleção inválida
+            }
 
-function renderProducts() {
-  const grid = document.getElementById('productsGrid');
-  grid.innerHTML = '';
-  const filtered = PRODUCTS.filter(p => currentCategory === 'all' || p.category === currentCategory);
-  filtered.forEach(product => {
-    const card = document.createElement('div');
-    card.className = 'product-card';
-    card.innerHTML = `
-      <div class="product-image">
-        <img src="${product.image}" alt="${product.name}" loading="lazy">
-      </div>
-      <div class="product-info">
-        <div class="product-name">${product.name}</div>
-        <div class="product-description">${product.description}</div>
-        <div class="product-footer">
-          <span class="product-price">R$ ${selectedPizzaPrice.toFixed(2).replace('.', ',')}</span>
-          <button class="view-options-btn" onclick="openOptionsModal(${product.id})">Eu Quero!</button>
-        </div>
-      </div>
-    `;
-    grid.appendChild(card);
-  });
-}
+            // Sempre atualiza o preço no final para refletir o estado correto das seleções
+            updateOptionPrice(productId);
+        }
 
-function filterCategory(category, element) {
-  currentCategory = category;
-  document.querySelectorAll('.category-tab').forEach(tab => tab.classList.remove('active'));
-  element.classList.add('active');
-  renderProducts();
-}
+        function updateOptionQuantity(change, productId) {
+            const qtyEl = document.getElementById('options-quantity');
+            let quantity = parseInt(qtyEl.textContent) + change;
+            if (quantity < 1) quantity = 1;
+            qtyEl.textContent = quantity;
+            updateOptionPrice(productId);
+        }
+        function updateOptionPrice(productId) {
+            const product = PRODUCTS.find(p => p.id === productId);
+            let basePrice = product.price;
+            let optionsPrice = 0;
+            const content = document.getElementById('optionsModal');
+            const radio = content.querySelector('input[type="radio"]:checked');
+            if (radio) { basePrice = parseFloat(radio.value); }
+            content.querySelectorAll('input[type="checkbox"]:checked').forEach(box => { optionsPrice += parseFloat(box.value); });
+            const quantity = parseInt(document.getElementById('options-quantity').textContent);
+            const totalPrice = (basePrice + optionsPrice) * quantity;
+            document.getElementById('options-total-price').textContent = `R$ ${totalPrice.toFixed(2).replace('.', ',')}`;
+        }
+        function addItemToCartFromModal(productId) {
+            const product = PRODUCTS.find(p => p.id === productId);
+            const content = document.getElementById('optionsModal');
+            let basePrice = product.price;
+            let optionsPrice = 0;
+            let selectedOptions = [];
+            const radio = content.querySelector('input[type="radio"]:checked');
+            if (radio) { 
+                basePrice = parseFloat(radio.value);
+                selectedOptions.push({ name: radio.dataset.name }); 
+            }
+            content.querySelectorAll('input[type="checkbox"]:checked').forEach(box => { 
+                optionsPrice += parseFloat(box.value); 
+                selectedOptions.push({ name: box.dataset.name }); 
+            });
+            const quantity = parseInt(document.getElementById('options-quantity').textContent);
+            const unitPrice = basePrice + optionsPrice;
+            cart.push({ id: product.id, name: product.name, quantity, unitPrice, selectedOptions, image: product.image, cartItemId: Date.now().toString() });
+            updateCartDisplay();
+            closeOptionsModal();
+        }
 
-function openOptionsModal(productId) {
-  const product = PRODUCTS.find(p => p.id === productId);
-  if (!product) return;
+        // --- LÓGICA DO CARRINHO ---
+        function calculateTotal() {
+            const subtotal = cart.reduce((sum, item) => sum + (item.unitPrice * item.quantity), 0);
+            const fee = cartState.deliveryType === 'delivery' ? cartState.deliveryFee : 0;
+            return subtotal + fee;
+        }
 
-  const modal = document.getElementById('optionsModal');
-  modal.innerHTML = `
-    <div class="modal-content">
-      <div class="modal-header">
-        <h3 class="modal-title">${product.name}</h3>
-        <button class="close-btn" onclick="closeOptionsModal()">&times;</button>
-      </div>
-      <div class="modal-body">
-        <img src="${product.image}" alt="${product.name}" class="options-product-image">
-        <div class="options-product-details">
-          <p class="product-description">${product.description}</p>
-        </div>
-        <div class="option-group">
-          <div class="option-group-title">Tipo de Porção</div>
-          <div class="option-item">
-            <div class="option-item-main">
-              <label for="option-inteira-${productId}">
-                <input type="radio" id="option-inteira-${productId}" name="portion-${productId}" value="inteira" onchange="handlePortionSelection(${productId}, 'inteira')" checked>
-                Selecionar como inteira
-              </label>
-            </div>
-          </div>
-          <div class="option-item">
-            <div class="option-item-main">
-              <label for="option-metade-${productId}">
-                <input type="radio" id="option-metade-${productId}" name="portion-${productId}" value="metade" onchange="handlePortionSelection(${productId}, 'metade')">
-                Selecionar como metade
-              </label>
-            </div>
-          </div>
-        </div>
-        <div id="half-selection-${productId}" style="display: none;">
-          <div class="option-group">
-            <div class="option-group-title">Escolha o segundo sabor (metade)</div>
-            <div class="products-grid" style="grid-template-columns: 1fr; gap: 10px; margin-top: 10px;" id="half-products-${productId}">
-            </div>
-          </div>
-        </div>
-        <div id="portion-error-${productId}" class="error-message"></div>
-      </div>
-      <div class="modal-footer">
-        <div class="quantity-controls">
-          <button class="qty-btn" onclick="updateOptionQuantity(-1, ${productId})">-</button>
-          <span class="quantity" id="options-quantity">1</span>
-          <button class="qty-btn" onclick="updateOptionQuantity(1, ${productId})">+</button>
-        </div>
-        <button class="add-to-cart-btn" onclick="addItemToCartFromModal(${productId})">
-          Adicionar
-          <span class="price" id="options-total-price">R$ ${selectedPizzaPrice.toFixed(2).replace('.', ',')}</span>
-        </button>
-      </div>
-    </div>
-  `;
+        function updateCartDisplay() {
+            const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+            const total = calculateTotal();
+            document.getElementById('cartCount').textContent = totalItems;
+            document.getElementById('cartTotal').textContent = `R$ ${total.toFixed(2).replace('.', ',')}`;
+            document.getElementById('floatingCart').classList.toggle('visible', totalItems > 0);
 
-  document.body.classList.add('modal-open');
-  modal.classList.add('active');
-  window.currentProductId = productId;
-  window.selectedPortion = 'inteira';
-  window.selectedHalfFlavor = null;
-  document.getElementById('options-total-price').textContent = `R$ ${selectedPizzaPrice.toFixed(2).replace('.', ',')}`;
-}
+            const totalPriceEl = document.getElementById('total-price-text');
+            if(totalPriceEl) totalPriceEl.textContent = `R$ ${total.toFixed(2).replace('.', ',')}`;
+        }
 
-function handlePortionSelection(productId, portion) {
-  window.selectedPortion = portion;
-  const halfSelection = document.getElementById(`half-selection-${productId}`);
-  const errorDiv = document.getElementById(`portion-error-${productId}`);
-  errorDiv.style.display = 'none';
-  
-  if (portion === 'metade') {
-    halfSelection.style.display = 'block';
-    loadHalfProducts(productId);
-  } else {
-    halfSelection.style.display = 'none';
-    window.selectedHalfFlavor = null;
-  }
-}
+        function openCartModal() {
+            const modal = document.getElementById('cartModal');
+            let contentHTML = `<div class="modal-content">
+                <div class="modal-header"><h3 class="modal-title">🛒 Finalizar Pedido</h3><button class="close-btn" onclick="closeCartModal()">&times;</button></div>
+                <div class="modal-body">`;
+            if (cart.length === 0) {
+                contentHTML += `<div class="empty-cart"><h3>Seu carrinho está vazio</h3></div>`;
+            } else {
+                let itemsHTML = '<div class="cart-section">';
+                cart.forEach(item => {
+                    let optionsText = item.selectedOptions.map(opt => `<li>${opt.name}</li>`).join('');
+                    itemsHTML += `<div class="cart-item">
+                         <div class="cart-item-image"><img src="${item.image}" alt="${item.name}"></div>
+                        <div class="cart-item-content">
+                            <div>
+                                <div class="cart-item-name">${item.quantity}x ${item.name}</div>
+                                     ${optionsText ? `<ul class="cart-item-details">${optionsText}</ul>` : ''}
+                            </div>
+                            <div class="cart-item-footer">
+                                 <span class="cart-item-price">R$ ${(item.unitPrice * item.quantity).toFixed(2).replace('.', ',')}</span>
+                                <div class="quantity-controls">
+                                    <button class="qty-btn" onclick="updateCartItemQuantity('${item.cartItemId}', -1)">-</button>
+                                     <span class="quantity">${item.quantity}</span>
+                                    <button class="qty-btn" onclick="updateCartItemQuantity('${item.cartItemId}', 1)">+</button>
+                                 </div>
+                            </div>
+                        </div>
+                    </div>`;
+                });
+                itemsHTML += '</div>';
+                contentHTML += itemsHTML;
 
-function loadHalfProducts(productId) {
-  const container = document.getElementById(`half-products-${productId}`);
-  container.innerHTML = '';
-  
-  PRODUCTS.filter(p => p.id !== productId).forEach(product => {
-    const card = document.createElement('div');
-    card.className = 'product-card';
-    card.style.cursor = 'pointer';
-    card.onclick = () => selectHalfFlavor(productId, product);
-    card.innerHTML = `
-      <div class="product-image">
-        <img src="${product.image}" alt="${product.name}" loading="lazy">
-      </div>
-      <div class="product-info">
-        <div class="product-name">${product.name}</div>
-        <div class="product-description">${product.description.substring(0, 60)}...</div>
-      </div>
-    `;
-    container.appendChild(card);
-  });
-}
+                const subtotal = cart.reduce((sum, item) => sum + (item.unitPrice * item.quantity), 0);
+                const total = calculateTotal();
+                
+                contentHTML += `<div class="cart-section">
+                    <div class="form-group">
+                        <label class="form-label">Estabelecimento para Entrega/Retirada</label>
+                        <select class="form-select" id="storeSelect" onchange="handleStoreChange(this.value)">
+                         ${STORES.map(s => `<option value="${s.id}" ${s.id == cartState.selectedStoreId ? 'selected' : ''}>${s.name}</option>`).join('')}
+                        </select>
+                    </div>
+                    <div class="form-group delivery-type-group">
+                         <label><input type="radio" name="deliveryType" value="pickup" onchange="handleDeliveryTypeChange(this.value)" ${cartState.deliveryType === 'pickup' ? 'checked' : ''}> Retirada</label>
+                        <label><input type="radio" name="deliveryType" value="delivery" onchange="handleDeliveryTypeChange(this.value)" ${cartState.deliveryType === 'delivery' ? 'checked' : ''}> Entrega</label>
+                    </div>
+                    <div id="delivery-info" style="display: ${cartState.deliveryType === 'delivery' ? 'block' : 'none'}">
+                        <div class="form-group"><label class="form-label">Seu Nome</label><input type="text" class="form-input" id="customerName"></div>
+                         <div class="form-group"><label class="form-label">Endereço de Entrega</label><input type="text" class="form-input" id="customerAddress" placeholder="Rua, Avenida, etc."></div>
+                        <div class="form-group"><label class="form-label">Número</label><input type="text" class="form-input" id="customerNumber"></div>
+                        <div class="form-group"><label class="form-label">CEP</label><input type="text" class="form-input" id="customerCep" placeholder="00000-000" onkeyup="handleCepChange(this.value)"></div>
+                    </div>
+                     <div class="form-group">
+                        <label class="form-label">Forma de Pagamento</label>
+                        <select class="form-select" id="paymentMethod">${PAYMENT_METHODS.map(p => `<option value="${p}">${p}</option>`).join('')}</select>
+                    </div>
+                     <div class="form-group"><label class="form-label">Observações</label><textarea class="form-input" id="customerNotes" rows="2" placeholder="Alguma observação especial sobre o pedido?"></textarea></div>
+                </div>`;
+                contentHTML += `<div class="cart-section">
+                    <div class="total-row"><span>Subtotal:</span><span>R$ ${subtotal.toFixed(2).replace('.', ',')}</span></div>
+                    <div class="total-row"><span>Taxa de entrega:</span><span id="delivery-fee-text">R$ ${cartState.deliveryFee.toFixed(2).replace('.', ',')}</span></div>
+                    <div class="total-row final"><span>Total:</span><span id="total-price-text">R$ ${total.toFixed(2).replace('.', ',')}</span></div>
+                    <button class="whatsapp-btn" onclick="sendToWhatsApp()">Gerar Pedido</button>
+                </div>`;
+            }
+            contentHTML += `</div></div>`;
+            modal.innerHTML = contentHTML;
+            document.body.classList.add('modal-open');
+            modal.classList.add('active');
+            handleCepChange(document.getElementById('customerCep')?.value || '');
+        }
 
-function selectHalfFlavor(productId, product) {
-  window.selectedHalfFlavor = product;
-  const cards = document.querySelectorAll(`#half-products-${productId} .product-card`);
-  cards.forEach(card => card.style.border = 'none');
-  event.currentTarget.style.border = '2px solid var(--primary-color)';
-}
+        function closeCartModal() { 
+            document.getElementById('cartModal').classList.remove('active');
+            if (!document.getElementById('optionsModal').classList.contains('active')) {
+                document.body.classList.remove('modal-open');
+            }
+        }
 
-function closeOptionsModal() {
-  document.getElementById('optionsModal').classList.remove('active');
-  if (!document.getElementById('cartModal').classList.contains('active')) {
-    document.body.classList.remove('modal-open');
-  }
-}
+        function updateCartItemQuantity(cartItemId, change) {
+            const itemIndex = cart.findIndex(item => item.cartItemId === cartItemId);
+            if (itemIndex > -1) {
+                cart[itemIndex].quantity += change;
+                if (cart[itemIndex].quantity <= 0) cart.splice(itemIndex, 1);
+            }
+            openCartModal();
+            updateCartDisplay();
+        }
+        
+        function handleStoreChange(storeId) { cartState.selectedStoreId = parseInt(storeId); }
 
-function updateOptionQuantity(change, productId) {
-  const qtyEl = document.getElementById('options-quantity');
-  let quantity = parseInt(qtyEl.textContent) + change;
-  if (quantity < 1) quantity = 1;
-  qtyEl.textContent = quantity;
+        function handleDeliveryTypeChange(type) {
+            cartState.deliveryType = type;
+            document.getElementById('delivery-info').style.display = type === 'delivery' ? 'block' : 'none';
+            if (type === 'pickup') {
+                cartState.deliveryFee = 0;
+                document.getElementById('delivery-fee-text').textContent = 'R$ 0,00';
+            } else {
+                handleCepChange(document.getElementById('customerCep').value);
+            }
+            updateCartDisplay();
+        }
 
-  const totalPrice = selectedPizzaPrice * quantity;
-  document.getElementById('options-total-price').textContent = `R$ ${totalPrice.toFixed(2).replace('.', ',')}`;
-}
+        function handleCepChange(cep) {
+            if (cartState.deliveryType === 'pickup') return;
+            const cepPrefix = cep ? cep.replace(/\D/g, '').substring(0, 5) : '';
+            if (cepPrefix.length === 5) {
+                cartState.deliveryFee = DELIVERY_ZONES[cepPrefix] || DELIVERY_ZONES['default'];
+            } else {
+                cartState.deliveryFee = 0;
+            }
 
-function addItemToCartFromModal(productId) {
-  const errorDiv = document.getElementById(`portion-error-${productId}`);
-  errorDiv.style.display = 'none';
-  
-  if (window.selectedPortion === 'metade' && !window.selectedHalfFlavor) {
-    errorDiv.textContent = 'Por favor, selecione um segundo sabor para a metade.';
-    errorDiv.style.display = 'block';
-    return;
-  }
+            const feeEl = document.getElementById('delivery-fee-text');
+            if (feeEl) feeEl.textContent = `R$ ${cartState.deliveryFee.toFixed(2).replace('.', ',')}`;
+            
+            updateCartDisplay();
+        }
 
-  const mainProduct = PRODUCTS.find(p => p.id === productId);
-  const quantity = parseInt(document.getElementById('options-quantity').textContent);
+        function sendToWhatsApp() {
+            const selectedStore = STORES.find(s => s.id == cartState.selectedStoreId);
+            if (!selectedStore) { alert("Erro: Loja não encontrada."); return; }
 
-  if (window.selectedPortion === 'inteira') {
-    cart.push({
-      id: mainProduct.id,
-      name: mainProduct.name,
-      quantity,
-      unitPrice: selectedPizzaPrice,
-      pizzaType: selectedPizzaType,
-      pizzaTypePrice: selectedPizzaPrice,
-      portion: 'inteira',
-      image: mainProduct.image,
-      cartItemId: Date.now().toString()
-    });
-  } else {
-    // Metade com dois sabores
-    const half1 = mainProduct.name;
-    const half2 = window.selectedHalfFlavor.name;
-    const combinedName = `${half1} + ${half2}`;
-    
-    cart.push({
-      id: `${mainProduct.id}-${window.selectedHalfFlavor.id}`,
-      name: combinedName,
-      quantity,
-      unitPrice: selectedPizzaPrice,
-      pizzaType: selectedPizzaType,
-      pizzaTypePrice: selectedPizzaPrice,
-      portion: 'metade',
-      half1: half1,
-      half2: half2,
-      image: mainProduct.image,
-      cartItemId: Date.now().toString()
-    });
-  }
+            const name = document.getElementById('customerName')?.value.trim();
+            const address = document.getElementById('customerAddress')?.value.trim();
+            const number = document.getElementById('customerNumber')?.value.trim();
+            const cep = document.getElementById('customerCep')?.value.trim();
+            const paymentMethod = document.getElementById('paymentMethod').value;
+            const notes = document.getElementById('customerNotes').value.trim();
+            if (cartState.deliveryType === 'delivery' && (!name || !address || !number || !cep)) {
+                alert('Por favor, preencha todos os campos de entrega!');
+                return;
+            }
 
-  updateCartDisplay();
-  closeOptionsModal();
-}
+            let message = `🏪 *NOVO PEDIDO - ${selectedStore.name}*\n\n`;
+            message += `*Tipo de Pedido:* ${cartState.deliveryType === 'delivery' ? 'Entrega' : 'Retirada'}\n\n`;
+            if (cartState.deliveryType === 'delivery') {
+                message += `👤 *Cliente:* ${name}\n`;
+                message += `📍 *Endereço:* ${address}, ${number}\n`;
+                message += `*CEP:* ${cep}\n\n`;
+            }
+            
+            message += `📋 *ITENS DO PEDIDO:*\n`;
+            cart.forEach(item => {
+                message += `--------------------\n*${item.quantity}x ${item.name}* (R$ ${item.unitPrice.toFixed(2).replace('.', ',')} cada)\n`;
+                if(item.selectedOptions.length > 0) { 
+                    item.selectedOptions.forEach(opt => { 
+                        const product = PRODUCTS.find(p => p.id === item.id);
+                        const originalOption = product.options.flatMap(g => g.items).find(i => i.name === opt.name);
+                        if (originalOption && originalOption.description) {
+                             message += ` - _${opt.name} (${originalOption.description})_\n`;
+                        } else {
+                              message += ` - _${opt.name}_\n`;
+                        }
+                    });
+                }
+            });
+            const subtotal = cart.reduce((sum, item) => sum + (item.unitPrice * item.quantity), 0);
+            const total = calculateTotal();
+            message += `--------------------\n\n`;
+            message += `*Subtotal:* R$ ${subtotal.toFixed(2).replace('.', ',')}\n`;
+            if (cartState.deliveryType === 'delivery') message += `*Taxa de Entrega:* R$ ${cartState.deliveryFee.toFixed(2).replace('.', ',')}\n`;
+            message += `*TOTAL:* R$ ${total.toFixed(2).replace('.', ',')}\n\n`;
+            message += `*Forma de Pagamento:* ${paymentMethod}\n`;
+            if (notes) message += `*Observações:* ${notes}`;
 
-function calculateTotal() {
-  return cart.reduce((sum, item) => sum + (item.unitPrice * item.quantity), 0);
-}
-
-function updateCartDisplay() {
-  const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
-  const total = calculateTotal();
-  document.getElementById('cartCount').textContent = totalItems;
-  document.getElementById('cartTotal').textContent = `R$ ${total.toFixed(2).replace('.', ',')}`;
-  document.getElementById('floatingCart').classList.toggle('visible', totalItems > 0);
-  const totalPriceEl = document.getElementById('total-price-text');
-  if (totalPriceEl) totalPriceEl.textContent = `R$ ${total.toFixed(2).replace('.', ',')}`;
-}
-
-function openCartModal() {
-  const modal = document.getElementById('cartModal');
-  let contentHTML = `<div class="modal-content">
-    <div class="modal-header">
-      <h3 class="modal-title">🛒 Finalizar Pedido</h3>
-      <button class="close-btn" onclick="closeCartModal()">&times;</button>
-    </div>
-    <div class="modal-body">`;
-
-  if (cart.length === 0) {
-    contentHTML += `<div class="empty-cart"><h3>Seu carrinho está vazio</h3></div>`;
-  } else {
-    let itemsHTML = '<div class="cart-section">';
-    cart.forEach(item => {
-      const typeText = getTypeText(item.pizzaType);
-      let itemDetails = '';
-      
-      if (item.portion === 'metade') {
-        itemDetails = `<ul class="cart-item-details">
-          <li>Metade: ${item.half1}</li>
-          <li>Metade: ${item.half2}</li>
-          <li>${typeText} - R$ ${item.pizzaTypePrice.toFixed(2).replace('.', ',')}</li>
-        </ul>`;
-      } else {
-        itemDetails = `<ul class="cart-item-details">
-          <li>${typeText} - R$ ${item.pizzaTypePrice.toFixed(2).replace('.', ',')}</li>
-        </ul>`;
-      }
-      
-      itemsHTML += `
-        <div class="cart-item">
-          <div class="cart-item-image">
-            <img src="${item.image}" alt="${item.name}">
-          </div>
-          <div class="cart-item-content">
-            <div>
-              <div class="cart-item-name">${item.quantity}x ${item.name}</div>
-              ${itemDetails}
-            </div>
-            <div class="cart-item-footer">
-              <span class="cart-item-price">R$ ${(item.unitPrice * item.quantity).toFixed(2).replace('.', ',')}</span>
-              <div class="quantity-controls">
-                <button class="qty-btn" onclick="updateCartItemQuantity('${item.cartItemId}', -1)">-</button>
-                <span class="quantity">${item.quantity}</span>
-                <button class="qty-btn" onclick="updateCartItemQuantity('${item.cartItemId}', 1)">+</button>
-              </div>
-            </div>
-          </div>
-        </div>`;
-    });
-    itemsHTML += '</div>';
-    contentHTML += itemsHTML;
-
-    const subtotal = calculateTotal();
-    const total = subtotal;
-    const hasBorda = selectedPizzaType.includes('com-borda');
-
-    contentHTML += `<div class="cart-section">
-      <div class="form-group">
-        <label class="form-label">Estabelecimento</label>
-        <select class="form-select" id="storeSelect">
-          ${STORES.map(s => `<option value="${s.id}">${s.name}</option>`).join('')}
-        </select>
-      </div>
-      <div class="form-group">
-        <label class="form-label">Borda</label>
-        <select class="form-select" id="crustSelect" ${!hasBorda ? 'disabled' : ''}>
-          ${CRUST_OPTIONS.map(crust => `<option value="${crust}">${crust}</option>`).join('')}
-        </select>
-      </div>
-      <div class="form-group">
-        <label class="form-label">Forma de Pagamento</label>
-        <select class="form-select" id="paymentMethod">
-          ${PAYMENT_METHODS.map(p => `<option value="${p}">${p}</option>`).join('')}
-        </select>
-      </div>
-      <div class="form-group">
-        <label class="form-label">Observações</label>
-        <textarea class="form-input" id="customerNotes" rows="2" placeholder="Alguma observação especial sobre o pedido?"></textarea>
-      </div>
-    </div>`;
-
-    contentHTML += `<div class="cart-section">
-      <div class="total-row final">
-        <span>Total:</span>
-        <span id="total-price-text">R$ ${total.toFixed(2).replace('.', ',')}</span>
-      </div>
-      <button class="whatsapp-btn" onclick="sendToWhatsApp()">Gerar Pedido</button>
-    </div>`;
-  }
-  contentHTML += `</div></div>`;
-  modal.innerHTML = contentHTML;
-  document.body.classList.add('modal-open');
-  modal.classList.add('active');
-}
-
-function closeCartModal() {
-  document.getElementById('cartModal').classList.remove('active');
-  if (!document.getElementById('optionsModal').classList.contains('active')) {
-    document.body.classList.remove('modal-open');
-  }
-}
-
-function updateCartItemQuantity(cartItemId, change) {
-  const itemIndex = cart.findIndex(item => item.cartItemId === cartItemId);
-  if (itemIndex > -1) {
-    cart[itemIndex].quantity += change;
-    if (cart[itemIndex].quantity <= 0) cart.splice(itemIndex, 1);
-  }
-  openCartModal();
-  updateCartDisplay();
-}
-
-function getTypeText(type) {
-  const types = {
-    'pre-assada-sem-borda': 'Pré assada sem borda',
-    'pre-assada-com-borda': 'Pré assada com borda',
-    'assada-sem-borda': 'Assada sem borda',
-    'assada-com-borda': 'Assada com borda',
-    'brotinho': 'Brotinho'
-  };
-  return types[type] || type;
-}
-
-function sendToWhatsApp() {
-  const selectedStore = STORES[0];
-  const paymentMethod = document.getElementById('paymentMethod').value;
-  const crust = document.getElementById('crustSelect').value;
-  const notes = document.getElementById('customerNotes').value.trim();
-  const hasBorda = selectedPizzaType.includes('com-borda');
-
-  let message = `🏪 *NOVO PEDIDO - ${selectedStore.name}*\n\n`;
-  message += `📋 *ITENS DO PEDIDO:*\n`;
-
-  cart.forEach(item => {
-    const typeText = getTypeText(item.pizzaType);
-    message += `--------------------\n*${item.quantity}x ${item.name}*\n`;
-    message += `Tipo: ${typeText} - R$ ${item.pizzaTypePrice.toFixed(2).replace('.', ',')} cada\n`;
-    if (item.portion === 'metade') {
-      message += `Sabores: ${item.half1} + ${item.half2}\n`;
-    }
-  });
-
-  if (hasBorda) {
-    message += `\n*Borda:* ${crust}\n`;
-  }
-
-  const total = calculateTotal();
-  message += `--------------------\n\n`;
-  message += `*TOTAL:* R$ ${total.toFixed(2).replace('.', ',')}\n\n`;
-  message += `*Forma de Pagamento:* ${paymentMethod}\n`;
-  if (notes) message += `*Observações:* ${notes}`;
-
-  window.open(`https://wa.me/${selectedStore.whatsapp}?text=${encodeURIComponent(message)}`, '_blank');
-}
-</script>
+            window.open(`https://wa.me/${selectedStore.whatsapp}?text=${encodeURIComponent(message)}`, '_blank');
+        }
+    </script>
 </body>
 </html>
